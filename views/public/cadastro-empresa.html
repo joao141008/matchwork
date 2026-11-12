@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro - MatchWork</title>
+
+    <link rel="stylesheet" href="../assets/public/styles/signup.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="auth-header">
+
+        <section class="logo">
+
+            <figure class="logo-icon">
+                <i class="fa-solid fa-briefcase"></i>
+            </figure>
+
+            <h1>MatchWork</h1>
+
+        </section>
+
+        <button
+            class="back-btn"
+            type="button"
+            onclick="window.location.href='./'">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Voltar
+
+        </button>
+
+    </header>
+
+
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <header>
+                <h2>Criar Empresa</h2>
+                <p class="subtitle">
+                    Comece sua jornada no MatchWork
+                </p>
+            </header>
+
+
+            <nav class="tipo-conta">
+
+                <button
+                    type="button"
+                    class="tipo"
+                    onclick="window.location.href='./cadastro-candidato.html'">
+
+                    <i class="fa-regular fa-user"></i>
+                    Candidato
+
+                </button>
+
+                <button type="button" class="tipo ativo">
+
+                    <i class="fa-solid fa-building"></i>
+                    Empresa
+
+                </button>
+
+            </nav>
+
+
+            <form id="company-form">
+
+                <section id="camposEmpresa" class="form-section">
+
+                    <!-- IDENTIFICAÇÃO -->
+
+                    <label for="companyName">
+                        Nome da Empresa
+                    </label>
+
+                    <section class="input-box">
+
+                        <input
+                            type="text"
+                            id="companyName"
+                            name="company_name"
+                            placeholder="Tech Solutions LTDA"
+                            maxlength="255"
+                            autocomplete="organization"
+                            required>
+
+                    </section>
+
+
+                    <label for="cnpj">
+                        CNPJ
+                    </label>
+
+                    <section class="input-box">
+
+                        <input
+                            type="text"
+                            id="cnpj"
+                            name="cnpj"
+                            placeholder="00.000.000/0000-00"
+                            maxlength="18"
+                            required>
+
+                    </section>
+
+
+                    <label for="location">
+                        Localização
+                    </label>
+
+                    <section class="input-box">
+
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="Cidade / Estado"
+                            maxlength="255">
+
+                    </section>
+
+
+                    <label for="website">
+                        Site oficial
+                    </label>
+
+                    <section class="input-box">
+
+                        <input
+                            type="url"
+                            id="website"
+                            name="website"
+                            placeholder="https://www.empresa.com"
+                            maxlength="255"
+                            pattern="https?://.+"
+                            title="Informe um endereço iniciado por http:// ou https://">
+
+                    </section>
+
+                                        <!-- ÁREAS DE ATUAÇÃO -->
+
+                    <fieldset
+                        class="areas-fieldset"
+                        aria-describedby="companyAreasHelp">
+
+                        <legend>
+                            Áreas de atuação *
+                        </legend>
+
+                        <p
+                            id="companyAreasHelp"
+                            class="areas-help">
+
+                            Selecione uma área por vez e clique em Adicionar.
+                            A empresa pode atuar em mais de uma área.
+
+                        </p>
+
+
+                        <div class="areas-select-row">
+
+                            <select
+                                id="companyAreaSelect"
+                                aria-label="Selecione uma área de atuação"
+                                disabled>
+
+                                <option value="">
+                                    Carregando áreas profissionais...
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                id="addCompanyArea"
+                                class="areas-add-btn"
+                                type="button"
+                                disabled>
+
+                                <i class="fa-solid fa-plus"></i>
+                                Adicionar
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="companyOtherAreaContainer"
+                            class="candidate-other-area"
+                            hidden>
+
+                            <label for="companyOtherArea">
+                                Qual é a outra área de atuação?
+                            </label>
+
+                            <input
+                                type="text"
+                                id="companyOtherArea"
+                                placeholder="Informe a área de atuação"
+                                maxlength="255"
+                                autocomplete="off"
+                                disabled>
+
+                        </div>
+
+
+                        <div
+                            id="companySelectedAreas"
+                            class="candidate-selected-areas"
+                            aria-live="polite">
+
+                            <p class="areas-empty">
+                                Nenhuma área adicionada.
+                            </p>
+
+                        </div>
+
+
+                        <p
+                            id="companyAreasError"
+                            class="areas-error"
+                            role="alert"
+                            hidden>
+                        </p>
+
+                    </fieldset>
+
+
+                    <!-- CARACTERÍSTICAS DA EMPRESA -->
+
+                    <label for="companySize">
+                        Porte da empresa
+                    </label>
+
+                    <section class="input-box">
+
+                        <select
+                            id="companySize"
+                            name="company_size">
+
+                            <option value="">
+                                Não informado
+                            </option>
+
+                            <option value="Microempresa">
+                                Microempresa (1 a 9 funcionários)
+                            </option>
+
+                            <option value="Pequena empresa">
+                                Pequena empresa (10 a 49 funcionários)
+                            </option>
+
+                            <option value="Média empresa">
+                                Média empresa (50 a 249 funcionários)
+                            </option>
+
+                            <option value="Grande empresa">
+                                Grande empresa (250 ou mais funcionários)
+                            </option>
+
+                        </select>
+
+                    </section>
+
+
+                    <!-- APRESENTAÇÃO -->
+
+                    <label for="description">
+                        Descrição da empresa
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Conte um pouco sobre a empresa...">
+                    </textarea>
+
+                </section>
+
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    disabled>
+
+                    Criar Empresa
+
+                </button>
+
+            </form>
+
+
+            <footer class="register">
+
+                <p>
+                    Já possui conta?
+                    <a href="./login.html">Entrar</a>
+                </p>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+
+    <script
+        src="../assets/public/scripts/cadastro-empresa.js"
+        type="module">
+    </script>
+
+</body>
+
+</html>

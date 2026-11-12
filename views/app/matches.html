@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meus Matches — MatchWork</title>
+
+<link rel="stylesheet" href="../assets/_common/styles/base.css">
+<link rel="stylesheet" href="../assets/app/styles/matches.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+
+<!-- HEADER -->
+<header class="app-header">
+
+  <section class="header-container">
+
+    <h1 class="logo">MatchWork</h1>
+
+    <nav class="header-nav" aria-label="Navegação principal">
+
+      <button class="btn-icon" id="btn-back" type="button" title="Voltar">←</button>
+
+      <button class="btn-icon" id="btn-profile" type="button" title="Perfil"><i class="fa-solid fa-user"></i></button>
+
+      <button class="btn-icon" id="btn-logout" type="button" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+
+    </nav>
+
+  </section>
+
+</header>
+
+
+
+<!-- MAIN -->
+<main class="app-main">
+
+  <section class="matches-container" aria-label="Lista de matches">
+
+    <header class="matches-header">
+
+      <h1>Meus Matches</h1>
+
+      <p>Clique em um perfil para abrir o chat</p>
+
+    </header>
+
+
+
+    <!-- GRID DE MATCHES -->
+    <section class="matches-grid" aria-label="Grid de matches">
+
+
+      <article class="match-card" data-chat="0">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop"
+            alt="João Silva"
+          >
+
+          <span class="online-indicator"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">João Silva</h3>
+          <p class="match-type">Trabalhador</p>
+          <p class="match-status">🟢 Online</p>
+        </header>
+
+      </article>
+
+
+
+      <article class="match-card" data-chat="1">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=400&auto=format&fit=crop"
+            alt="Tech Solutions"
+          >
+
+          <span class="online-indicator"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">Tech Solutions</h3>
+          <p class="match-type">Empresa</p>
+          <p class="match-status">🟢 Online</p>
+        </header>
+
+      </article>
+
+
+
+      <article class="match-card" data-chat="2">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"
+            alt="Maria Santos"
+          >
+
+          <span class="online-indicator offline"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">Maria Santos</h3>
+          <p class="match-type">Trabalhadora</p>
+          <p class="match-status">🔴 Offline</p>
+        </header>
+
+      </article>
+
+
+
+      <article class="match-card" data-chat="3">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400&auto=format&fit=crop"
+            alt="Pedro Oliveira"
+          >
+
+          <span class="online-indicator"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">Pedro Oliveira</h3>
+          <p class="match-type">Trabalhador</p>
+          <p class="match-status">🟢 Online</p>
+        </header>
+
+      </article>
+
+
+
+      <article class="match-card" data-chat="4">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400&auto=format&fit=crop"
+            alt="Innovation Corp"
+          >
+
+          <span class="online-indicator"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">Innovation Corp</h3>
+          <p class="match-type">Empresa</p>
+          <p class="match-status">🟢 Online</p>
+        </header>
+
+      </article>
+
+
+
+      <article class="match-card" data-chat="5">
+
+        <figure class="match-image-container">
+
+          <img
+            class="match-image"
+            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop"
+            alt="Ana Costa"
+          >
+
+          <span class="online-indicator offline"></span>
+
+        </figure>
+
+        <header class="match-info">
+          <h3 class="match-name">Ana Costa</h3>
+          <p class="match-type">Trabalhadora</p>
+          <p class="match-status">🔴 Offline</p>
+        </header>
+
+      </article>
+
+
+    </section>
+
+  </section>
+
+</main>
+
+<script type="module" src="../assets/app/scripts/matches.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cadastro - MatchWork</title>
+
+<link rel="stylesheet" href="../assets/public/styles/signup.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- HEADER FIXO -->
+<header class="auth-header">
+
+  <section class="logo">
+
+    <figure class="logo-icon">
+      <i class="fa-solid fa-briefcase"></i>
+    </figure>
+
+    <h1>MatchWork</h1>
+
+  </section>
+
+  <button class="back-btn" onclick="window.location.href='./'">
+    <i class="fa-solid fa-arrow-left"></i>
+    Voltar
+  </button>
+
+</header>
+
+<!-- CONTAINER -->
+<main class="auth-container">
+
+  <section class="auth-card">
+
+    <header>
+      <h2>Criar conta</h2>
+      <p class="subtitle">Comece sua jornada no MatchWork</p>
+    </header>
+
+    <nav class="tipo-conta">
+
+      <button type="button" class="tipo ativo" onclick="trocarTipo('pessoa')">
+        <i class="fa-regular fa-user"></i>
+        Candidato
+      </button>
+
+      <button type="button" class="tipo" onclick="trocarTipo('empresa')">
+        <i class="fa-solid fa-building"></i>
+        Empresa
+      </button>
+
+    </nav>
+
+    <form class="form">
+
+      <section id="camposPessoa" class="form-section">
+
+        <label>Nome Completo</label>
+        <section class="input-box"><input placeholder="João Silva"></section>
+
+        <label>CPF</label>
+        <section class="input-box"><input placeholder="123.456.789-10"></section>
+
+        <label>E-mail</label>
+        <section class="input-box"><input type="email" placeholder="email@email.com"></section>
+
+        <label>Localização</label>
+        <section class="input-box"><input placeholder="São Paulo, SP"></section>
+
+        <label>Área de Interesse</label>
+        <section class="input-box"><input placeholder="Desenvolvimento Full-stack"></section>
+
+        <label>Formação</label>
+        <section class="input-box"><input placeholder="Ciência da Computação"></section>
+
+        <label>Pretensão Salarial</label>
+        <section class="input-box"><input placeholder="R$ 5.000 - R$ 8.000"></section>
+
+        <label>Disponibilidade</label>
+        <section class="input-box"><input placeholder="Imediato"></section>
+
+        <label>Competências</label>
+        <section class="input-box"><input placeholder="React, NodeJS, SQL"></section>
+
+        <label>Sobre Você</label>
+        <textarea></textarea>
+
+      </section>
+
+      <section id="camposEmpresa" class="form-section hidden">
+
+        <label>Nome da Empresa</label>
+        <section class="input-box"><input placeholder="Tech Solutions LTDA"></section>
+
+        <label>CNPJ</label>
+        <section class="input-box"><input placeholder="00.000.000/0000-00"></section>
+
+        <label>E-mail Corporativo</label>
+        <section class="input-box"><input type="email" placeholder="contato@empresa.com"></section>
+
+        <label>Localização</label>
+        <section class="input-box"><input placeholder="Cidade / Estado"></section>
+
+        <label>Setor</label>
+        <section class="input-box"><input placeholder="Tecnologia"></section>
+
+        <label>Tamanho</label>
+        <section class="input-box"><input placeholder="50-100 colaboradores"></section>
+
+        <label>Site</label>
+        <section class="input-box"><input placeholder="www.empresa.com"></section>
+
+        <label>Benefícios</label>
+        <section class="input-box"><input placeholder="VR, Plano Saúde"></section>
+
+        <label>Descrição</label>
+        <textarea></textarea>
+
+      </section>
+
+      <label>Senha</label>
+      <section class="input-box"><input type="password"></section>
+
+      <label>Confirmar Senha</label>
+      <section class="input-box"><input type="password"></section>
+
+      <button type="submit" class="submit-btn">
+        Criar Conta
+      </button>
+
+    </form>
+
+    <footer class="register">
+      <p>
+        Já possui conta?
+        <a href="login.html">Entrar</a>
+      </p>
+    </footer>
+
+  </section>
+
+</main>
+
+<script src="../assets/public/scripts/login.js"></script>
+
+</body>
+</html>

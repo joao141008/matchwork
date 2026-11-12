@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — MatchWork</title>
+    <link rel="stylesheet" href="../assets/app/styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <section class="header-container">
+            <h1 class="logo">MatchWork</h1>
+            <nav class="header-filters" id="headerFilters" aria-label="Filtros de vagas"></nav>
+            <nav class="header-nav" aria-label="Navegação principal">
+                <button class="btn-icon" id="btnChats" type="button" title="Matches" aria-label="Abrir matches">
+                    <i class="fa-solid fa-comments"></i>
+                </button>
+                <button class="btn-icon profile-avatar" id="btnPerfil" type="button" title="Meu perfil" aria-label="Abrir meu perfil">
+                    <span id="profileAvatarInitial" aria-hidden="true">?</span>
+                    <img id="profileAvatarImage" alt="" hidden>
+                </button>
+                <button class="btn-icon" id="btnSair" type="button" title="Sair" aria-label="Sair">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </nav>
+        </section>
+    </header>
+
+    <main class="app-main dashboard-page">
+        <section id="candidateDashboard" class="role-dashboard" hidden>
+            <header class="dashboard-heading">
+                <div>
+                    <span class="eyebrow">MATCHWORK / OPORTUNIDADES</span>
+                    <h2>Encontre sua próxima oportunidade</h2>
+                    <p>Vagas publicadas por empresas que procuram novos talentos.</p>
+                </div>
+                <div class="dashboard-counter">
+                    <strong id="candidateVacancyCount">0</strong>
+                    <span>vagas disponíveis</span>
+                </div>
+            </header>
+
+            <p id="candidateFeedback" class="dashboard-feedback" role="status" aria-live="polite" hidden></p>
+            <section id="candidateVacancyGrid" class="vacancy-grid" aria-live="polite"></section>
+
+            <section id="candidateEmptyState" class="empty-state-panel" hidden>
+                <span class="empty-state-icon" aria-hidden="true">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <h3>Nenhuma vaga encontrada</h3>
+                <p>Não encontramos oportunidades com esses filtros. Experimente alterar os critérios ou volte mais tarde.</p>
+                <button type="button" class="btn-secondary" id="clearVacancyFilters">Limpar filtros</button>
+            </section>
+        </section>
+
+        <section id="companyDashboard" class="role-dashboard" hidden>
+            <header class="dashboard-heading company-heading">
+                <div>
+                    <span class="eyebrow">MATCHWORK / PAINEL DA EMPRESA</span>
+                    <h2>Gerencie suas oportunidades</h2>
+                    <p>Publique vagas e acompanhe as oportunidades abertas pela sua empresa.</p>
+                </div>
+                <button type="button" class="btn-primary" id="btnNovaVaga">
+                    <i class="fa-solid fa-plus"></i> Publicar vaga
+                </button>
+            </header>
+
+            <section class="vacancy-stats" aria-label="Resumo das vagas">
+                <article class="stat-card">
+                    <span>Total de vagas</span>
+                    <strong id="statTotal">0</strong>
+                </article>
+                <article class="stat-card">
+                    <span>Ativas</span>
+                    <strong id="statActive">0</strong>
+                </article>
+                <article class="stat-card">
+                    <span>Encerradas</span>
+                    <strong id="statClosed">0</strong>
+                </article>
+            </section>
+
+            <p id="companyFeedback" class="dashboard-feedback" role="status" aria-live="polite" hidden></p>
+            <section id="companyVacancyList" class="company-vacancy-list" aria-live="polite"></section>
+
+            <section id="companyEmptyState" class="empty-state-panel" hidden>
+                <span class="empty-state-icon" aria-hidden="true">
+                    <i class="fa-solid fa-briefcase"></i>
+                </span>
+                <h3>Sua empresa ainda não publicou vagas</h3>
+                <p>Crie a primeira oportunidade para começar a receber candidatos interessados.</p>
+                <button type="button" class="btn-primary" id="btnNovaVagaEmpty">
+                    <i class="fa-solid fa-plus"></i> Publicar primeira vaga
+                </button>
+            </section>
+        </section>
+
+        <section id="dashboardLoading" class="loading-panel" role="status">
+            <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>
+            <span>Carregando MatchWork...</span>
+        </section>
+    </main>
+
+    <dialog id="vacancyDialog" class="vacancy-dialog">
+        <form id="vacancyForm" class="vacancy-form">
+            <header class="dialog-header">
+                <div>
+                    <span class="eyebrow">MATCHWORK / OPORTUNIDADES</span>
+                    <h2 id="vacancyDialogTitle">Publicar nova vaga</h2>
+                    <p>Preencha as informações da oportunidade.</p>
+                </div>
+                <button type="button" class="dialog-close" id="btnCloseVacancyDialog" aria-label="Fechar formulário">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+
+            <input type="hidden" id="vacancyId">
+            <p id="vacancyFormFeedback" class="form-feedback" role="alert" hidden></p>
+
+            <section class="form-grid">
+                <label class="form-field form-field-full">
+                    <span>Título da vaga *</span>
+                    <input type="text" name="title" maxlength="255" required placeholder="Ex.: Desenvolvedor(a) Front-end">
+                </label>
+
+                <label class="form-field form-field-full">
+                    <span>Descrição da oportunidade *</span>
+                    <textarea name="description" rows="4" required placeholder="Apresente as responsabilidades e o contexto da vaga."></textarea>
+                </label>
+
+                <label class="form-field form-field-full">
+                    <span>Requisitos</span>
+                    <textarea name="requirements" rows="3" placeholder="Conhecimentos e experiências desejados."></textarea>
+                </label>
+
+                <label class="form-field">
+                    <span>Salário / remuneração</span>
+                    <input type="text" name="salary_offer" placeholder="Ex.: R$ 3.000 a R$ 4.000">
+                </label>
+
+                <label class="form-field">
+                    <span>Carga horária</span>
+                    <input type="text" name="workload" placeholder="Ex.: 40 horas semanais">
+                </label>
+
+                <label class="form-field">
+                    <span>Horário de trabalho</span>
+                    <input type="text" name="work_schedule" placeholder="Ex.: 8h às 17h">
+                </label>
+
+                <label class="form-field">
+                    <span>Turno</span>
+                    <select name="shift">
+                        <option value="">Selecione</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                        <option value="Integral">Integral</option>
+                        <option value="A combinar">A combinar</option>
+                    </select>
+                </label>
+
+                <label class="form-field">
+                    <span>Modelo de trabalho</span>
+                    <select name="work_model">
+                        <option value="">Selecione</option>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Híbrido">Híbrido</option>
+                        <option value="Remoto">Remoto</option>
+                    </select>
+                </label>
+
+                <label class="form-field">
+                    <span>Tipo de contratação</span>
+                    <select name="employment_type">
+                        <option value="">Selecione</option>
+                        <option value="CLT">CLT</option>
+                        <option value="PJ">PJ</option>
+                        <option value="Estágio">Estágio</option>
+                        <option value="Temporário">Temporário</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Aprendiz">Aprendiz</option>
+                    </select>
+                </label>
+
+                <label class="form-field form-field-full">
+                    <span>Localização</span>
+                    <input type="text" name="location" placeholder="Ex.: Charqueadas, RS ou Remoto">
+                </label>
+
+                <label class="form-field form-field-full">
+                    <span>Benefícios</span>
+                    <textarea name="benefits" rows="3" placeholder="Ex.: vale-alimentação, plano de saúde, auxílio home office."></textarea>
+                </label>
+            </section>
+
+            <fieldset class="areas-fieldset">
+                <legend>Áreas profissionais *</legend>
+                <p>Selecione uma ou mais áreas relacionadas à vaga.</p>
+                <section id="vacancyAreas" class="area-options">
+                    <span class="muted-text">Carregando áreas...</span>
+                </section>
+            </fieldset>
+
+            <footer class="dialog-actions">
+                <button type="button" class="btn-secondary" id="btnCancelVacancy">Cancelar</button>
+                <button type="submit" class="btn-primary" id="btnSaveVacancy">Publicar vaga</button>
+            </footer>
+        </form>
+    </dialog>
+
+    <script type="module" src="../assets/app/scripts/dashboard.js"></script>
+</body>
+</html>

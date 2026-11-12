@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Chat — MatchWork
+</title>
+
+<link rel="stylesheet"
+href="../assets/_common/styles/base.css">
+
+<link rel="stylesheet"
+href="../assets/app/styles/chat.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="app-header">
+
+  <article class="header-container">
+
+    <h1 class="logo">
+      MatchWork
+    </h1>
+
+    <nav class="header-nav">
+
+      <button
+      class="btn-icon"
+
+      id="btn-back">
+
+        ←
+
+      </button>
+
+
+      <button
+      class="btn-icon"
+
+      id="btn-logout">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+      </button>
+
+    </nav>
+
+  </article>
+
+</header>
+
+
+
+<!-- MAIN -->
+
+<main class="app-main">
+
+
+  <!-- CHAT -->
+
+  <section class="chat-container">
+
+
+    <!-- HEADER CHAT -->
+
+    <header class="chat-header">
+
+      <figure class="chat-profile-image">
+
+        <img
+        id="chat-image"
+
+        src=""
+
+        alt="Perfil">
+
+      </figure>
+
+
+      <article class="chat-profile-info">
+
+        <h2 id="chat-contact-name">
+
+        </h2>
+
+        <p id="chat-contact-status">
+
+        </p>
+
+      </article>
+
+    </header>
+
+
+
+    <!-- MENSAGENS -->
+
+    <section
+    class="chat-messages"
+
+    id="chat-messages">
+
+    </section>
+
+
+
+    <!-- INPUT -->
+
+    <form
+    class="chat-input-form"
+
+    id="chat-form">
+
+      <fieldset>
+
+        <input
+        type="text"
+
+        id="chat-input"
+
+        placeholder="Digite sua mensagem..."
+
+        autocomplete="off"
+
+        required>
+
+
+        <button
+        type="submit"
+
+        class="btn-send">
+
+          ➤
+
+        </button>
+
+      </fieldset>
+
+    </form>
+
+  </section>
+
+</main>
+
+<script src="../assets/app/scripts/chat.js"></script>
+
+</body>
+
+</html>

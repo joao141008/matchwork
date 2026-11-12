@@ -1,0 +1,348 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:linear-gradient(90deg,#050b10,#09131a,#050b10);
+color:white;
+overflow-x:hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+padding:15px 25px;
+display:flex;
+justify-content:center;
+background:rgba(10,15,20,.85);
+backdrop-filter:blur(8px);
+border-bottom:1px solid rgba(216,175,135,.15);
+z-index:999;
+}
+
+.header-container{
+width:100%;
+max-width:1450px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo-fixed{
+display:flex;
+align-items:center;
+gap:10px;
+font-size:24px;
+font-weight:700;
+color:#D8AF87;
+}
+
+.logo-icon{
+width:38px;
+height:38px;
+background:#446368;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+.header-nav{
+display:flex;
+gap:12px;
+}
+
+.btn-icon{
+width:42px;
+height:42px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:rgba(255,255,255,.04);
+color:#D8AF87;
+display:flex;
+align-items:center;
+justify-content:center;
+transition:.3s;
+}
+
+.btn-icon:hover{
+background:rgba(68,99,104,.25);
+transform:translateY(-2px);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.profile-main{
+padding:120px 20px 60px;
+display:flex;
+justify-content:center;
+}
+
+.profile-card{
+width:100%;
+max-width:900px;
+background:rgba(12,17,22,.92);
+border:1px solid rgba(255,255,255,.06);
+border-radius:25px;
+padding:30px;
+backdrop-filter:blur(12px);
+}
+
+/* =========================
+   PROFILE HEADER
+========================= */
+
+.profile-header{
+display:flex;
+gap:20px;
+align-items:center;
+margin-bottom:25px;
+}
+
+.photo-box{
+position:relative;
+}
+
+.photo-box img{
+width:120px;
+height:120px;
+border-radius:18px;
+object-fit:cover;
+border:2px solid rgba(216,175,135,.25);
+}
+
+#profile-photo{
+opacity:.35;
+filter:
+sepia(1)
+saturate(2)
+hue-rotate(330deg);
+}
+
+.photo-btn{
+position:absolute;
+bottom:5px;
+right:5px;
+width:32px;
+height:32px;
+border:none;
+border-radius:8px;
+background:#446368;
+color:white;
+cursor:pointer;
+font-size:.9rem;
+}
+
+/* INFO */
+
+.profile-info h1{
+font-size:1.6rem;
+color:#D8AF87;
+}
+
+.profile-info p{
+color:#b7c0c8;
+margin-top:4px;
+}
+
+.profile-info span{
+color:#446368;
+font-size:.9rem;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tabs{
+display:flex;
+gap:10px;
+margin:25px 0;
+}
+
+.tab{
+flex:1;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+background:rgba(255,255,255,.04);
+color:white;
+font-weight:600;
+transition:.3s;
+}
+
+.tab.active{
+background:#446368;
+}
+
+.tab:hover{
+background:rgba(68,99,104,.25);
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.tab-content{
+display:none;
+animation:fade .3s ease;
+}
+
+.tab-content.active{
+display:block;
+}
+
+@keyframes fade{
+from{opacity:0; transform:translateY(10px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* =========================
+   CARDS (INFO)
+========================= */
+
+.card{
+background:rgba(255,255,255,.03);
+border:1px solid rgba(255,255,255,.06);
+padding:20px;
+border-radius:16px;
+margin-bottom:15px;
+}
+
+.card h2{
+color:#D8AF87;
+margin-bottom:10px;
+}
+
+.card p{
+color:#cfd6dc;
+line-height:1.6;
+}
+
+/* =========================
+   FORM (EDIT + SUPPORT)
+========================= */
+
+.form{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+label{
+color:#D8AF87;
+font-size:.9rem;
+font-weight:600;
+margin-top:6px;
+}
+
+input, textarea, select{
+width:100%;
+padding:12px 14px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.04);
+color:white;
+outline:none;
+transition:.3s;
+}
+
+input:focus, textarea:focus, select:focus{
+border-color:#446368;
+box-shadow:0 0 15px rgba(68,99,104,.25);
+}
+
+textarea{
+resize:none;
+min-height:100px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.btn{
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#446368;
+color:white;
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+.btn:hover{
+background:#557983;
+transform:translateY(-2px);
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media(max-width:700px){
+
+.profile-header{
+flex-direction:column;
+text-align:center;
+}
+
+.tabs{
+flex-direction:column;
+}
+}
+
+/* =========================
+   SELECT LIMPO (VISUAL BONITO)
+========================= */
+
+select{
+width:100%;
+padding:12px 14px;
+border-radius:12px;
+
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.04);
+
+color:white;
+font-size:1rem;
+
+outline:none;
+cursor:pointer;
+
+transition:.3s;
+}
+
+/* hover leve */
+select:hover{
+border-color:rgba(216,175,135,.3);
+}
+
+/* focus mais elegante */
+select:focus{
+border-color:#446368;
+box-shadow:0 0 15px rgba(68,99,104,.25);
+background:rgba(255,255,255,.06);
+}
+
+/* opções do dropdown */
+select option{
+background:#0b141a;
+color:white;
+}

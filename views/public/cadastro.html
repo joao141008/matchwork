@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cadastro - MatchWork</title>
+
+<link rel="stylesheet" href="../assets/public/styles/signup.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- HEADER FIXO -->
+<header class="auth-header">
+
+  <section class="logo">
+
+    <figure class="logo-icon">
+      <i class="fa-solid fa-briefcase"></i>
+    </figure>
+
+    <h1>MatchWork</h1>
+
+  </section>
+
+  <button class="back-btn" onclick="window.location.href='./'">
+    <i class="fa-solid fa-arrow-left"></i>
+    Voltar
+  </button>
+
+</header>
+
+
+<!-- FORMULÁRIO -->
+<form id="signup-form">
+
+  <!-- CONTAINER -->
+  <main class="auth-container">
+
+    <section class="auth-card">
+
+      <header>
+        <h2>Criar conta</h2>
+        <p class="subtitle">Comece sua jornada no MatchWork</p>
+      </header>
+
+      <label for="email">Email</label>
+
+      <section class="input-box">
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="emailqualquer@email.com"
+          required
+        >
+      </section>
+
+
+      <label for="password">Senha</label>
+
+      <section class="input-box">
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
+        >
+      </section>
+
+
+      <label for="confirmPassword">Confirmar Senha</label>
+
+      <section class="input-box">
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          required
+        >
+      </section>
+
+
+      <button type="submit" class="submit-btn">
+        Criar Conta
+      </button>
+
+      <footer class="register">
+        <p>
+          Já possui conta?
+          <a href="login.html">Entrar</a>
+
+          <!-- <button type="button" class="back-btn" onclick="voltar()"> -->
+        </p>
+
+        <p>
+          Já cadastrou usuário?
+          <a href="cadastro-candidato.html">Cadastre Candidato</a>
+
+          <!-- <button type="button" class="back-btn" onclick="voltar()"> -->
+        </p>
+      </footer>
+
+    </section>
+
+  </main>
+
+</form>
+
+
+<script type="module" src="../assets/public/scripts/cadastro-usuario.js"></script>
+
+</body>
+</html>

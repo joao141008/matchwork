@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Admin - MatchWork</title>
+
+  <link rel="stylesheet" href="../assets/admin/styles/admin-dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+  <article class="container">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+      <h1>Painel Administrativo</h1>
+      <p>Gerencie a plataforma de matches profissionais</p>
+    </header>
+
+    <!-- CARDS GERAIS -->
+    <section>
+      <h2>Dados Gerais do Sistema</h2>
+
+      <article class="cards">
+
+        <article class="card">
+          <article>
+            <h3>Total de Matches</h3>
+            <span>1.247</span>
+            <p>Conexões realizadas</p>
+          </article>
+          <i class="fa-regular fa-heart"></i>
+        </article>
+
+        <article class="card">
+          <article>
+            <h3>Empresas</h3>
+            <span>342</span>
+            <p>Organizações cadastradas</p>
+          </article>
+          <i class="fa-regular fa-building"></i>
+        </article>
+
+        <article class="card">
+          <article>
+            <h3>Candidatos</h3>
+            <span>1.856</span>
+            <p>Profissionais cadastrados</p>
+          </article>
+          <i class="fa-regular fa-user"></i>
+        </article>
+
+      </article>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+
+      <article class="titulo">
+        <article>
+          <h2>Perguntas Frequentes</h2>
+          <p>Gerencie FAQ do sistema</p>
+        </article>
+
+        <button>
+          <i class="fa-solid fa-plus"></i>
+          Adicionar Pergunta
+        </button>
+      </article>
+
+      <article class="faq">
+          <!-- agora isso vem do banco de dados -->
+      </article>
+    </section>
+
+    <!-- DENÚNCIAS -->
+    <section>
+
+      <h2>Ranking de Denúncias</h2>
+      <p>Usuários mais denunciados</p>
+
+      <article class="ranking">
+
+        <article class="usuario">
+          <article class="info">
+            <article class="posicao">1°</article>
+            <img src="https://i.pravatar.cc/60?img=5">
+            <article>
+              <h3>TechCorp</h3>
+              <span>Empresa • 15 denúncias</span>
+            </article>
+          </article>
+          <button>Excluir Conta</button>
+        </article>
+
+        <article class="usuario">
+          <article class="info">
+            <article class="posicao">2°</article>
+            <img src="https://i.pravatar.cc/60?img=15">
+            <article>
+              <h3>João Silva</h3>
+              <span>Candidato • 12 denúncias</span>
+            </article>
+          </article>
+          <button>Excluir Conta</button>
+        </article>
+
+      </article>
+    </section>
+
+    <!-- ========================= -->
+    <!-- CENTRAL DE SUPORTE NOVA -->
+    <!-- ========================= -->
+    <section class="admin-support">
+
+      <article class="section-header">
+        <h2>Central de Solicitações</h2>
+        <p>Gerencie perguntas, problemas e sugestões dos usuários</p>
+      </article>
+
+      <!-- TABS -->
+      <nav class="admin-tabs">
+
+        <button class="admin-tab active" data-tab="questions">Perguntas</button>
+        <button class="admin-tab" data-tab="reports">Problemas / Denúncias</button>
+        <button class="admin-tab" data-tab="suggestions">Sugestões</button>
+
+      </nav>
+
+      <!-- PERGUNTAS -->
+      <section id="questions" class="admin-tab-content active">
+
+        <article class="ticket">
+          <article>
+            <h3>Como funciona o sistema de matches?</h3>
+            <p>Usuário quer entender compatibilidade.</p>
+          </article>
+
+          <article class="ticket-actions">
+            <button><i class="fa-solid fa-eye"></i></button>
+            <button><i class="fa-solid fa-trash"></i></button>
+          </article>
+        </article>
+
+      </section>
+
+      <!-- PROBLEMAS -->
+      <section id="reports" class="admin-tab-content">
+
+        <article class="ticket danger">
+          <article>
+            <h3>Empresa enviando spam</h3>
+            <p>Denúncia contra comportamento abusivo.</p>
+          </article>
+
+          <article class="ticket-actions">
+            <button><i class="fa-solid fa-eye"></i></button>
+            <button><i class="fa-solid fa-ban"></i></button>
+          </article>
+        </article>
+
+      </section>
+
+      <!-- SUGESTÕES -->
+      <section id="suggestions" class="admin-tab-content">
+
+        <article class="ticket good">
+          <article>
+            <h3>Filtro por salário</h3>
+            <p>Usuário sugeriu melhoria na busca.</p>
+          </article>
+
+          <article class="ticket-actions">
+            <button><i class="fa-solid fa-eye"></i></button>
+            <button><i class="fa-solid fa-check"></i></button>
+          </article>
+        </article>
+
+      </section>
+
+    </section>
+
+  </article>
+
+  <!-- JS TABS -->
+  <script type="module" src="../assets/admin/scripts/admin.js"></script>
+
+</body>
+
+</html>

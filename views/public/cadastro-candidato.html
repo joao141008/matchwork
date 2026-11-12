@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - MatchWork</title>
+
+    <link rel="stylesheet" href="../assets/public/styles/signup.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<header class="auth-header">
+    <section class="logo">
+        <figure class="logo-icon">
+            <i class="fa-solid fa-briefcase"></i>
+        </figure>
+        <h1>MatchWork</h1>
+    </section>
+
+    <button class="back-btn" type="button" onclick="window.location.href='./'">
+        <i class="fa-solid fa-arrow-left"></i>
+        Voltar
+    </button>
+</header>
+
+<main class="auth-container">
+    <section class="auth-card">
+
+        <header>
+            <h2>Criar Candidato</h2>
+            <p class="subtitle">Comece sua jornada no MatchWork</p>
+        </header>
+
+        <nav class="tipo-conta" aria-label="Tipo de cadastro">
+            <button type="button" class="tipo ativo" aria-current="page">
+                <i class="fa-regular fa-user"></i>
+                Candidato
+            </button>
+
+            <button
+                type="button"
+                class="tipo"
+                onclick="window.location.href='./cadastro-empresa.html'">
+                <i class="fa-solid fa-building"></i>
+                Empresa
+            </button>
+        </nav>
+
+        <form id="candidate-form" novalidate>
+
+            <section id="camposPessoa" class="form-section">
+
+                <label for="fullName">Nome Completo</label>
+                <section class="input-box">
+                    <input
+                        type="text"
+                        id="fullName"
+                        name="full_name"
+                        placeholder="João Silva"
+                        autocomplete="name"
+                        required>
+                </section>
+
+                <label for="cpf">CPF</label>
+                <section class="input-box">
+                    <input
+                        type="text"
+                        id="cpf"
+                        name="cpf"
+                        placeholder="123.456.789-10"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        required>
+                </section>
+
+                <label for="location">Localização</label>
+                <section class="input-box">
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="São Paulo, SP">
+                </section>
+
+                <fieldset class="areas-fieldset" aria-describedby="candidateAreasHelp">
+                    <legend>Áreas de interesse *</legend>
+
+                    <p id="candidateAreasHelp" class="areas-help">
+                        Selecione uma área por vez e clique em Adicionar. Você pode incluir mais de uma.
+                    </p>
+
+                    <div class="areas-select-row">
+                        <select
+                            id="candidateAreaSelect"
+                            aria-label="Selecione uma área de interesse"
+                            disabled>
+
+                            <option value="">Carregando áreas profissionais...</option>
+                        </select>
+
+                        <button
+                            id="addCandidateArea"
+                            class="areas-add-btn"
+                            type="button"
+                            disabled>
+
+                            <i class="fa-solid fa-plus"></i>
+                            Adicionar
+                        </button>
+                    </div>
+
+                    <div
+                        id="candidateOtherAreaContainer"
+                        class="candidate-other-area"
+                        hidden>
+
+                        <label for="candidateOtherArea">
+                            Qual é a sua outra área de interesse?
+                        </label>
+
+                        <input
+                            type="text"
+                            id="candidateOtherArea"
+                            placeholder="Informe sua área de interesse"
+                            maxlength="255"
+                            autocomplete="off"
+                            disabled>
+                    </div>
+
+                    <div
+                        id="candidateSelectedAreas"
+                        class="candidate-selected-areas"
+                        aria-live="polite">
+
+                        <p class="areas-empty">Nenhuma área adicionada.</p>
+                    </div>
+
+                    <p
+                        id="candidateAreasError"
+                        class="areas-error"
+                        role="alert"
+                        hidden>
+                    </p>
+                </fieldset>
+
+                <label for="salaryExpectation">Pretensão Salarial</label>
+                <section class="input-box">
+                    <input
+                        type="text"
+                        id="salaryExpectation"
+                        name="salary_expectation"
+                        placeholder="R$ 5.000 - R$ 8.000">
+                </section>
+
+                <label for="workSchedule">Horário de Trabalho</label>
+                <section class="input-box">
+                    <input
+                        type="text"
+                        id="workSchedule"
+                        name="work_schedule"
+                        placeholder="8h às 18h">
+                </section>
+
+                <label for="shift">Turno de preferência</label>
+                <section class="input-box">
+                    <select id="shift" name="shift">
+                        <option value="">Não tenho preferência</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                        <option value="Integral">Integral</option>
+                        <option value="A combinar">A combinar</option>
+                    </select>
+                </section>
+
+                <label for="workModel">Modelo de trabalho desejado</label>
+                <section class="input-box">
+                    <select id="workModel" name="work_model">
+                        <option value="">Não tenho preferência</option>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Híbrido">Híbrido</option>
+                        <option value="Remoto">Remoto</option>
+                    </select>
+                </section>
+
+                <label for="employmentType">Tipo de contratação desejado</label>
+                <section class="input-box">
+                    <select id="employmentType" name="employment_type">
+                        <option value="">Não tenho preferência</option>
+                        <option value="CLT">CLT</option>
+                        <option value="PJ">PJ</option>
+                        <option value="Estágio">Estágio</option>
+                        <option value="Temporário">Temporário</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Aprendiz">Aprendiz</option>
+                    </select>
+                </section>
+
+                <label for="about">Sobre Você</label>
+                <textarea
+                    id="about"
+                    name="about"
+                    placeholder="Conte um pouco sobre você..."></textarea>
+
+            </section>
+
+            <button type="submit" class="submit-btn" disabled>
+                Criar Candidato
+            </button>
+
+        </form>
+
+        <footer class="register">
+            <p>
+                Já possui conta?
+                <a href="./login.html">Entrar</a>
+            </p>
+        </footer>
+
+    </section>
+</main>
+
+<script
+    src="../assets/public/scripts/cadastro-candidato.js"
+    type="module">
+</script>
+
+</body>
+</html>

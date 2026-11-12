@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil — MatchWork</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../assets/app/styles/profile.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <section class="header-container">
+
+      <h1 class="logo-fixed">
+        <span class="logo-icon">
+          <i class="fa-solid fa-briefcase"></i>
+        </span>
+        MatchWork
+      </h1>
+
+      <nav class="header-nav">
+        <button class="btn-icon" id="btn-back" title="Voltar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <button class="btn-icon" id="btn-matches" title="Matches">
+          <i class="fa-solid fa-comments"></i>
+        </button>
+
+        <button class="btn-icon" id="btn-logout" title="Sair">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </nav>
+
+    </section>
+  </header>
+
+  <!-- MAIN -->
+  <main class="profile-main">
+
+    <section class="profile-card">
+
+      <!-- HEADER PERFIL -->
+      <header class="profile-header">
+
+        <figure class="photo-box">
+          <img 
+            id="profile-photo"
+            src="../assets/app/images/icon-icons.png"
+            alt="Foto de perfil"
+          >
+
+          <button class="photo-btn">
+            <i class="fa-solid fa-camera"></i>
+          </button>
+        </figure>
+
+        <section class="profile-info">
+          <h1 id="profile-name">João Silva</h1>
+          <p id="profile-type">Trabalhador</p>
+          <span id="profile-location">São Paulo, SP</span>
+        </section>
+
+      </header>
+
+      <!-- TABS -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="info">Informações</button>
+        <button class="tab" data-tab="edit">Editar</button>
+        <button class="tab" data-tab="support">Suporte</button>
+      </nav>
+
+      <!-- INFO -->
+      <section id="info" class="tab-content active">
+
+        <article class="card">
+          <h2>Pessoais</h2>
+          <p><strong>Nome:</strong> João Silva</p>
+          <p><strong>Email:</strong> joao@email.com</p>
+          <p><strong>Telefone:</strong> (11) 99999-9999</p>
+        </article>
+
+        <article class="card">
+          <h2>Profissional</h2>
+          <p><strong>Área:</strong> Tecnologia</p>
+          <p><strong>Local:</strong> São Paulo</p>
+          <p><strong>Salário:</strong> R$ 5.000 - 8.000</p>
+        </article>
+
+        <article class="card">
+          <h2>Sobre</h2>
+          <p>Profissional com experiência em desenvolvimento web...</p>
+        </article>
+
+      </section>
+
+      <!-- EDIT -->
+      <!-- EDIT -->
+<section id="edit" class="tab-content">
+
+  <form class="form">
+
+    <label>Nome</label>
+    <input type="text" placeholder="Ex: João Silva">
+
+    <label>Email</label>
+    <input type="email" placeholder="Ex: joao@email.com">
+
+    <label>Telefone</label>
+    <input type="text" placeholder="Ex: (11) 99999-9999">
+
+    <label>Localização</label>
+    <input type="text" placeholder="Ex: São Paulo, SP">
+
+    <label>Área</label>
+    <input type="text" placeholder="Ex: Tecnologia / Design / Marketing">
+
+    <label>Salário</label>
+    <input type="text" placeholder="Ex: R$ 5.000 - R$ 8.000">
+
+    <label>Sobre</label>
+    <textarea placeholder="Conte um pouco sobre você..."></textarea>
+
+    <button type="submit" class="btn">Salvar</button>
+
+  </form>
+
+</section>
+
+      <!-- SUPPORT -->
+      <!-- SUPPORT -->
+<section id="support" class="tab-content">
+
+  <form class="form">
+
+    <label>Tipo de Solicitação</label>
+    <select id="support-type">
+      <option value="question">Pergunta</option>
+      <option value="report">Denúncia</option>
+      <option value="bug">Problema / Bug</option>
+      <option value="suggestion">Sugestão</option>
+    </select>
+
+    <label>Título</label>
+    <input type="text" id="support-title" placeholder="Resuma sua solicitação...">
+
+    <label>Mensagem</label>
+    <textarea id="support-message" placeholder="Explique com detalhes..." rows="6"></textarea>
+
+    <button type="submit" class="btn">Enviar</button>
+
+  </form>
+
+</section>
+
+  </main>
+  <script type="module" src="../assets/app/scripts/profile.js"></script>
+
+</body>
+</html>
