@@ -19,7 +19,7 @@ source/
 ├── Controller/     ← Controllers — recebem requisições e retornam respostas
 ├── Core/           ← Núcleo — classes fundamentais do framework (Router, Connect)
 ├── Models/         ← Models — representam as tabelas do banco de dados
-└── Support/        ← Helpers — funções utilitárias auxiliares
+└── Support/        ← Helpers — funções utilitárias auxiliares kkkkkkkkkkkkkkk
 ```
 
 ---
