@@ -39,6 +39,45 @@ export default class VacancyService extends HttpClientBase {
         );
     }
 
+    // Envia várias imagens para uma vaga já cadastrada.
+    async uploadImages(vacancyId, files = []) {
+        this.#validateId(vacancyId);
+
+        if (!Array.isArray(files) || files.length === 0) {
+            throw new TypeError("Selecione pelo menos uma imagem para enviar.");
+        }
+
+        const formData = new FormData();
+
+        files.forEach((file) => {
+            if (!(file instanceof Blob)) {
+                throw new TypeError("Todos os arquivos enviados precisam ser imagens válidas.");
+            }
+
+            formData.append("images[]", file, file.name || "imagem");
+        });
+
+        return super.postForm(
+            `/vacancies/${Number(vacancyId)}/images`,
+            formData
+        );
+    }
+
+    // Remove uma imagem específica de uma vaga.
+    async deleteImage(vacancyId, imageId) {
+        this.#validateId(vacancyId);
+
+        const numericImageId = Number(imageId);
+
+        if (!Number.isInteger(numericImageId) || numericImageId < 1) {
+            throw new TypeError("O ID da imagem deve ser um número inteiro positivo.");
+        }
+
+        return super.delete(
+            `/vacancies/${Number(vacancyId)}/images/${numericImageId}`
+        );
+    }
+
     // Encerra uma vaga.
     async delete(vacancyId) {
         this.#validateId(vacancyId);

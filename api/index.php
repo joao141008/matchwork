@@ -75,6 +75,8 @@ $route->delete('/reports/delete/{deleteId}', 'Reports:delete');
 // Candidato: curtir vagas e consultar seus interesses
 $route->post('/interactions/candidate/like', 'Interactions:registerCandidateLike');
 $route->get('/interactions/candidate/list', 'Interactions:listCandidateLikes');
+$route->post('/interactions/candidate/pass', 'Interactions:registerCandidatePass');
+$route->get('/interactions/candidate/passes', 'Interactions:listCandidatePasses');
 
 // Empresa: curtir candidatos interessados e consultar interessados
 $route->post('/interactions/company/like', 'Interactions:registerCompanyLike');

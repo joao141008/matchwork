@@ -33,24 +33,24 @@
             <header class="dashboard-heading">
                 <div>
                     <span class="eyebrow">MATCHWORK / OPORTUNIDADES</span>
-                    <h2>Encontre sua próxima oportunidade</h2>
-                    <p>Vagas publicadas por empresas que procuram novos talentos.</p>
+                    <h2>Encontre seu próximo match profissional</h2>
+                    <p>Avalie uma oportunidade por vez e escolha se ela combina com você.</p>
                 </div>
                 <div class="dashboard-counter">
                     <strong id="candidateVacancyCount">0</strong>
-                    <span>vagas disponíveis</span>
+                    <span>oportunidades restantes</span>
                 </div>
             </header>
 
             <p id="candidateFeedback" class="dashboard-feedback" role="status" aria-live="polite" hidden></p>
-            <section id="candidateVacancyGrid" class="vacancy-grid" aria-live="polite"></section>
+            <section id="candidateVacancyGrid" class="vacancy-swipe-deck" aria-live="polite"></section>
 
             <section id="candidateEmptyState" class="empty-state-panel" hidden>
                 <span class="empty-state-icon" aria-hidden="true">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <h3>Nenhuma vaga encontrada</h3>
-                <p>Não encontramos oportunidades com esses filtros. Experimente alterar os critérios ou volte mais tarde.</p>
+                <h3>Você chegou ao fim!</h3>
+                <p>Não há mais oportunidades para avaliar com os filtros atuais. Você pode limpar os filtros ou voltar depois para conferir novas vagas.</p>
                 <button type="button" class="btn-secondary" id="clearVacancyFilters">Limpar filtros</button>
             </section>
         </section>
@@ -62,9 +62,14 @@
                     <h2>Gerencie suas oportunidades</h2>
                     <p>Publique vagas e acompanhe as oportunidades abertas pela sua empresa.</p>
                 </div>
-                <button type="button" class="btn-primary" id="btnNovaVaga">
-                    <i class="fa-solid fa-plus"></i> Publicar vaga
-                </button>
+                <div class="company-heading-actions">
+                    <button type="button" class="btn-secondary" id="btnInterestedCandidates">
+                        <i class="fa-solid fa-users"></i> Candidatos interessados
+                    </button>
+                    <button type="button" class="btn-primary" id="btnNovaVaga">
+                        <i class="fa-solid fa-plus"></i> Publicar vaga
+                    </button>
+                </div>
             </header>
 
             <section class="vacancy-stats" aria-label="Resumo das vagas">
@@ -196,6 +201,23 @@
                 </label>
             </section>
 
+            <section class="vacancy-images-fieldset" aria-labelledby="vacancyImagesTitle">
+                <div class="vacancy-images-heading">
+                    <div>
+                        <h3 id="vacancyImagesTitle">Imagens da oportunidade</h3>
+                        <p>Adicione até 6 imagens para apresentar o ambiente, a equipe ou o local de trabalho. JPEG, PNG ou WebP; máximo de 5 MB cada.</p>
+                    </div>
+                    <span id="vacancyImageCount" class="image-count">0 / 6</span>
+                </div>
+                <input id="vacancyImagesInput" class="visually-hidden-input" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+                <button type="button" class="btn-secondary" id="btnChooseVacancyImages">
+                    <i class="fa-solid fa-images"></i> Selecionar imagens
+                </button>
+                <div id="vacancyImagePreview" class="vacancy-image-preview" aria-live="polite">
+                    <p class="image-preview-empty">Nenhuma imagem selecionada.</p>
+                </div>
+            </section>
+
             <fieldset class="areas-fieldset">
                 <legend>Áreas profissionais *</legend>
                 <p>Selecione uma ou mais áreas relacionadas à vaga.</p>
@@ -212,5 +234,8 @@
     </dialog>
 
     <script type="module" src="../assets/app/scripts/dashboard.js"></script>
+    <script type="module" src="../assets/app/scripts/vacancy-media.js"></script>
+    <script type="module" src="../assets/app/scripts/vacancy-gallery.js"></script>
+    <script type="module" src="../assets/app/scripts/company-interested-shortcut.js"></script>
 </body>
 </html>

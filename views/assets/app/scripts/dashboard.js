@@ -48,6 +48,7 @@ let areasDisponiveis = [];
 let vagasCandidato = [];
 let vagasEmpresa = [];
 let interessesCandidato = new Set();
+let vagasIgnoradasCandidato = new Set();
 let vagaEmEdicao = null;
 
 async function inicializarDashboard() {
@@ -314,9 +315,10 @@ async function carregarVagasCandidato() {
         "info"
     );
 
-    const [vacancyResponse, likesResponse] = await Promise.all([
+    const [vacancyResponse, likesResponse, passesResponse] = await Promise.all([
         vacancyService.list(),
-        interactionService.listCandidateLikes()
+        interactionService.listCandidateLikes(),
+        interactionService.listCandidatePasses()
     ]);
 
     if (vacancyResponse?.type === "error") {
@@ -325,6 +327,10 @@ async function carregarVagasCandidato() {
 
     if (likesResponse?.type === "error") {
         throw new Error(likesResponse.message || "Não foi possível consultar seus interesses.");
+    }
+
+    if (passesResponse?.type === "error") {
+        throw new Error(passesResponse.message || "Não foi possível consultar as vagas dispensadas.");
     }
 
     vagasCandidato = (vacancyResponse?.data || []).map((item) => Vacancy.fromJSON(item));
@@ -336,6 +342,12 @@ async function carregarVagasCandidato() {
                 item?.vacancy_id ??
                 item?.vacancy?.id
             ))
+            .filter((id) => Number.isInteger(id) && id > 0)
+    );
+
+    vagasIgnoradasCandidato = new Set(
+        (passesResponse?.data || [])
+            .map((item) => Number(item?.vacancy_id ?? item?.vacancyId ?? item?.id))
             .filter((id) => Number.isInteger(id) && id > 0)
     );
 
@@ -365,7 +377,12 @@ function renderizarVagasCandidato() {
             `${vacancy.location || ""} ${vacancy.companyName || ""}`
         ).toLocaleLowerCase("pt-BR");
 
+        const alreadyEvaluated =
+            interessesCandidato.has(vacancy.id) ||
+            vagasIgnoradasCandidato.has(vacancy.id);
+
         return (
+            !alreadyEvaluated &&
             areaOk &&
             modelOk &&
             employmentOk &&
@@ -377,14 +394,16 @@ function renderizarVagasCandidato() {
     candidateVacancyCount.textContent = String(filtered.length);
     candidateEmptyState.hidden = filtered.length > 0;
 
-    filtered.forEach((vacancy) => {
-        candidateVacancyGrid.appendChild(criarCardVagaCandidato(vacancy));
-    });
+    // O feed apresenta somente uma oportunidade por vez, como um app de matching.
+    if (filtered.length > 0) {
+        candidateVacancyGrid.appendChild(criarCardVagaCandidato(filtered[0]));
+    }
 }
 
 function criarCardVagaCandidato(vacancy) {
     const card = document.createElement("article");
-    card.className = "vacancy-card";
+    card.className = "vacancy-card tinder-card";
+    card.dataset.vacancyId = String(vacancy.id);
 
     const header = document.createElement("header");
     header.className = "vacancy-card-header";
@@ -436,27 +455,29 @@ function criarCardVagaCandidato(vacancy) {
     }
 
     const footer = document.createElement("footer");
-    footer.className = "vacancy-card-footer";
+    footer.className = "vacancy-card-footer tinder-card-footer";
 
     const date = document.createElement("span");
     date.className = "vacancy-date";
     date.textContent = formatarData(vacancy.createdAt);
 
-    const interestButton = document.createElement("button");
-    interestButton.type = "button";
-    interestButton.className = "btn-primary interest-button";
+    const actions = document.createElement("div");
+    actions.className = "candidate-swipe-actions";
 
-    interestButton.textContent = interessesCandidato.has(vacancy.id)
-        ? "Interesse enviado"
-        : "Tenho interesse";
+    const passButton = document.createElement("button");
+    passButton.type = "button";
+    passButton.className = "swipe-action swipe-pass";
+    passButton.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i><span>Não tenho interesse</span>';
+    passButton.addEventListener("click", () => registrarDesinteresse(vacancy, passButton, likeButton));
 
-    interestButton.disabled = interessesCandidato.has(vacancy.id);
+    const likeButton = document.createElement("button");
+    likeButton.type = "button";
+    likeButton.className = "swipe-action swipe-like";
+    likeButton.innerHTML = '<i class="fa-solid fa-heart" aria-hidden="true"></i><span>Tenho interesse</span>';
+    likeButton.addEventListener("click", () => registrarInteresse(vacancy, likeButton, passButton));
 
-    interestButton.addEventListener("click", () => {
-        registrarInteresse(vacancy, interestButton);
-    });
-
-    footer.append(date, interestButton);
+    actions.append(passButton, likeButton);
+    footer.append(date, actions);
 
     card.append(
         header,
@@ -470,9 +491,11 @@ function criarCardVagaCandidato(vacancy) {
     return card;
 }
 
-async function registrarInteresse(vacancy, button) {
+async function registrarInteresse(vacancy, button, alternateButton) {
     button.disabled = true;
-    button.textContent = "Enviando...";
+    if (alternateButton) alternateButton.disabled = true;
+    button.classList.add("is-loading");
+    button.querySelector("span").textContent = "Enviando...";
 
     try {
         const response = await interactionService.registerCandidateLike(vacancy.id);
@@ -482,7 +505,6 @@ async function registrarInteresse(vacancy, button) {
         }
 
         interessesCandidato.add(vacancy.id);
-        button.textContent = "Interesse enviado";
 
         mostrarFeedback(
             candidateFeedback,
@@ -490,12 +512,40 @@ async function registrarInteresse(vacancy, button) {
             "success"
         );
 
+        renderizarVagasCandidato();
+
     } catch (error) {
         console.error("Erro ao registrar interesse:", error);
-
         button.disabled = false;
-        button.textContent = "Tenho interesse";
+        if (alternateButton) alternateButton.disabled = false;
+        button.classList.remove("is-loading");
+        button.querySelector("span").textContent = "Tenho interesse";
+        mostrarFeedback(candidateFeedback, error.message, "error");
+    }
+}
 
+async function registrarDesinteresse(vacancy, button, alternateButton) {
+    button.disabled = true;
+    if (alternateButton) alternateButton.disabled = true;
+    button.classList.add("is-loading");
+    button.querySelector("span").textContent = "Registrando...";
+
+    try {
+        const response = await interactionService.registerCandidatePass(vacancy.id);
+
+        if (response?.type === "error") {
+            throw new Error(response.message || "Não foi possível dispensar esta vaga.");
+        }
+
+        vagasIgnoradasCandidato.add(vacancy.id);
+        renderizarVagasCandidato();
+
+    } catch (error) {
+        console.error("Erro ao dispensar vaga:", error);
+        button.disabled = false;
+        if (alternateButton) alternateButton.disabled = false;
+        button.classList.remove("is-loading");
+        button.querySelector("span").textContent = "Não tenho interesse";
         mostrarFeedback(candidateFeedback, error.message, "error");
     }
 }

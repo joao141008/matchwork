@@ -1154,3 +1154,263 @@ body {
         flex-wrap: wrap;
     }
 }
+
+
+/* GALERIA DE IMAGENS DAS VAGAS */
+.vacancy-gallery {
+    position: relative;
+    width: 100%;
+    height: 230px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    background: #0c1111;
+    touch-action: pan-y;
+    user-select: none;
+}
+.vacancy-gallery-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.vacancy-gallery-image.gallery-slide-in { animation: vacancyGallerySlide .24s ease; }
+.vacancy-gallery-image.image-load-error { opacity: .25; }
+.vacancy-gallery-arrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 50%;
+    background: rgba(5,8,8,.72);
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+.vacancy-gallery-arrow:hover { background: #446368; }
+.vacancy-gallery-arrow.previous { left: 12px; }
+.vacancy-gallery-arrow.next { right: 12px; }
+.vacancy-gallery-counter {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(5,8,8,.76);
+    color: #fff;
+    font-size: .78rem;
+}
+@keyframes vacancyGallerySlide {
+    from { opacity: .5; transform: scale(1.015); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* PRÉVIA DAS IMAGENS NO FORMULÁRIO */
+.vacancy-images-fieldset { margin: 22px 0; padding: 18px; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; }
+.vacancy-images-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.vacancy-images-heading h3 { margin: 0 0 6px; }
+.vacancy-images-heading p { color: #aab4b1; font-size: .88rem; line-height: 1.5; }
+.image-count { flex: 0 0 auto; color: #D8AF87; font-weight: 700; }
+.visually-hidden-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.vacancy-image-preview { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.vacancy-image-preview-item { position: relative; width: 112px; height: 88px; overflow: hidden; margin: 0; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: #0c1111; }
+.vacancy-image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+.vacancy-image-remove { position: absolute; top: 5px; right: 5px; width: 27px; height: 27px; border: 0; border-radius: 50%; background: rgba(10,12,12,.84); color: #fff; cursor: pointer; }
+.image-preview-empty { color: #9da8a4; font-size: .88rem; }
+@media (max-width: 620px) { .vacancy-gallery { height: 190px; } }
+
+
+/* ======================================================
+   FEED DE OPORTUNIDADES — EXPERIÊNCIA DE MATCHING
+   ====================================================== */
+
+.vacancy-swipe-deck {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4px 0 28px;
+}
+
+.vacancy-card.tinder-card {
+    width: min(100%, 760px);
+    padding: 22px;
+    border-radius: 28px;
+    border-color: rgba(216,175,135,.24);
+    background: linear-gradient(155deg, #192222 0%, #101616 72%);
+    box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 0 1px rgba(255,255,255,.015);
+    animation: tinderCardEnter .32s ease both;
+}
+
+.vacancy-card.tinder-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(216,175,135,.38);
+}
+
+.vacancy-card.tinder-card .vacancy-gallery {
+    height: clamp(240px, 38vw, 390px);
+    margin: -2px -2px 20px;
+    width: calc(100% + 4px);
+    border-radius: 21px;
+    cursor: zoom-in;
+}
+
+.vacancy-card.tinder-card .vacancy-card-header {
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.vacancy-card.tinder-card h3 {
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+}
+
+.vacancy-card.tinder-card .vacancy-description {
+    max-height: 8.5em;
+    overflow: auto;
+}
+
+.tinder-card-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding-top: 18px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255,255,255,.07);
+}
+
+.candidate-swipe-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.swipe-action {
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    padding: 13px 18px;
+    border: 1px solid transparent;
+    border-radius: 17px;
+    color: #fff;
+    font-size: .98rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+}
+
+.swipe-action i { font-size: 1.18rem; }
+.swipe-action:hover:not(:disabled) { transform: translateY(-3px); filter: brightness(1.12); }
+.swipe-action:disabled { cursor: wait; opacity: .58; }
+.swipe-pass {
+    background: rgba(177,91,77,.16);
+    border-color: rgba(205,111,95,.42);
+    color: #e9a092;
+}
+.swipe-like {
+    background: linear-gradient(135deg, #446368, #527c78);
+    border-color: rgba(118,175,159,.36);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(53,105,95,.2);
+}
+.swipe-action.is-loading { transform: scale(.98); }
+
+.vacancy-gallery-image { cursor: zoom-in; }
+.vacancy-gallery-zoom {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 11px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 999px;
+    background: rgba(5,8,8,.74);
+    color: #fff;
+    font-size: .78rem;
+    cursor: pointer;
+}
+.vacancy-gallery-zoom:hover { background: rgba(68,99,104,.95); }
+
+.vacancy-image-modal {
+    position: fixed;
+    inset: 0;
+    width: min(96vw, 1400px);
+    max-width: 96vw;
+    height: min(94vh, 1000px);
+    max-height: 94vh;
+    margin: auto;
+    padding: 56px 72px 48px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 22px;
+    background: rgba(7,10,10,.97);
+    color: #fff;
+    box-shadow: 0 30px 100px rgba(0,0,0,.68);
+}
+.vacancy-image-modal::backdrop { background: rgba(0,0,0,.86); backdrop-filter: blur(8px); }
+.vacancy-image-modal[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.vacancy-image-modal-content {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+    user-select: none;
+}
+.vacancy-image-modal-close,
+.vacancy-image-modal-arrow {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 50%;
+    background: rgba(22,29,29,.92);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+.vacancy-image-modal-close { top: 14px; right: 14px; }
+.vacancy-image-modal-arrow { top: 50%; transform: translateY(-50%); }
+.vacancy-image-modal-arrow.previous { left: 14px; }
+.vacancy-image-modal-arrow.next { right: 14px; }
+.vacancy-image-modal-close:hover,
+.vacancy-image-modal-arrow:hover { background: #446368; }
+.vacancy-image-modal-caption {
+    position: absolute;
+    left: 72px;
+    right: 72px;
+    bottom: 14px;
+    color: #d7dfdc;
+    text-align: center;
+    font-size: .88rem;
+}
+
+@keyframes tinderCardEnter {
+    from { opacity: 0; transform: translateY(12px) scale(.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 760px) {
+    .vacancy-swipe-deck { padding-top: 0; }
+    .vacancy-card.tinder-card { padding: 15px; border-radius: 22px; }
+    .vacancy-card.tinder-card .vacancy-gallery { height: 250px; border-radius: 16px; }
+    .candidate-swipe-actions { grid-template-columns: 1fr; gap: 10px; }
+    .swipe-action { min-height: 56px; }
+    .vacancy-image-modal { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; padding: 58px 42px 54px; border: 0; border-radius: 0; }
+    .vacancy-image-modal-arrow.previous { left: 6px; }
+    .vacancy-image-modal-arrow.next { right: 6px; }
+    .vacancy-image-modal-caption { left: 42px; right: 42px; }
+}

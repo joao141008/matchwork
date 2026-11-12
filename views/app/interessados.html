@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidatos interessados — MatchWork</title>
+    <link rel="stylesheet" href="../assets/_common/styles/base.css">
+    <link rel="stylesheet" href="../assets/app/styles/interessados.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="interested-header">
+        <a class="interested-logo" href="./dashboard.html">MatchWork</a>
+        <nav>
+            <a class="btn-outline" href="./dashboard.html"><i class="fa-solid fa-arrow-left"></i> Painel</a>
+            <a class="btn-primary" href="./matches.html"><i class="fa-solid fa-comments"></i> Meus matches</a>
+        </nav>
+    </header>
+
+    <main class="interested-main">
+        <header class="page-heading">
+            <span class="eyebrow">MATCHWORK / TALENTOS</span>
+            <h1>Candidatos interessados</h1>
+            <p>Veja quem demonstrou interesse nas vagas da sua empresa. Ao retribuir o interesse, vocês criam um match e liberam o chat.</p>
+        </header>
+
+        <p id="interestedFeedback" class="feedback" role="status" aria-live="polite" hidden></p>
+        <section id="interestedList" class="interested-list" aria-live="polite">
+            <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Carregando candidatos...</div>
+        </section>
+        <section id="interestedEmpty" class="empty-state" hidden>
+            <i class="fa-solid fa-user-group"></i>
+            <h2>Ninguém demonstrou interesse ainda</h2>
+            <p>Quando um candidato demonstrar interesse em uma das suas vagas, o perfil aparecerá aqui.</p>
+            <a class="btn-primary" href="./dashboard.html">Voltar às vagas</a>
+        </section>
+    </main>
+
+    <script type="module" src="../assets/app/scripts/interessados.js"></script>
+</body>
+</html>

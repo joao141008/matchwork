@@ -9,6 +9,7 @@ use Source\Models\CompanyLike;
 use Source\Models\Vacancy;
 use Source\Models\VacancyArea;
 use Source\Models\VacancyLike;
+use Source\Models\VacancyPass;
 use Source\Models\User;
 use Source\Models\UserMatch;
 
@@ -151,6 +152,83 @@ class Interactions extends Api
         }
 
         $this->call(200, 'success', 'Interesses do candidato encontrados.', 'success')->back($response);
+    }
+
+    /**
+     * Registra que o candidato dispensou uma vaga. A decisão fica salva
+     * por candidato + vaga e não volta a aparecer em novos acessos.
+     */
+    public function registerCandidatePass(array $data): void
+    {
+        if (!$this->authToken(3)) {
+            $this->call(401, 'unauthorized', 'Somente candidatos autenticados podem dispensar vagas.', 'error')->back();
+            return;
+        }
+
+        $vacancyId = filter_var($data['vacancy_id'] ?? null, FILTER_VALIDATE_INT);
+        if ($vacancyId === false || $vacancyId < 1) {
+            $this->call(400, 'bad_request', 'Informe um vacancy_id válido.', 'error')->back();
+            return;
+        }
+
+        $candidate = new Candidate();
+        if (!$candidate->selectByUserId($this->userAuthId)) {
+            $this->call(404, 'not_found', 'Cadastro do candidato não encontrado.', 'error')->back();
+            return;
+        }
+
+        $vacancy = new Vacancy();
+        if (!$vacancy->selectById((int)$vacancyId) || $vacancy->getStatus() !== 'active') {
+            $this->call(404, 'not_found', 'Vaga não encontrada ou não está ativa.', 'error')->back();
+            return;
+        }
+
+        $candidateLike = new VacancyLike(null, $this->userAuthId, (int)$vacancyId);
+        if ($candidateLike->likeExists()) {
+            $this->call(409, 'conflict', 'Você já demonstrou interesse nesta vaga.', 'error')->back();
+            return;
+        }
+
+        $pass = new VacancyPass(null, $this->userAuthId, (int)$vacancyId);
+        if (!$pass->passExists() && !$pass->insert()) {
+            $this->call(500, 'internal_server_error', 'Não foi possível registrar a vaga dispensada.', 'error')->back();
+            return;
+        }
+
+        $this->call(201, 'created', 'Vaga dispensada. Ela não aparecerá novamente para você.', 'success')->back([
+            'candidate_user_id' => $this->userAuthId,
+            'vacancy_id' => (int)$vacancyId
+        ]);
+    }
+
+    /** Lista as vagas já dispensadas pelo candidato autenticado. */
+    public function listCandidatePasses(): void
+    {
+        if (!$this->authToken(3)) {
+            $this->call(401, 'unauthorized', 'Somente candidatos autenticados podem consultar vagas dispensadas.', 'error')->back();
+            return;
+        }
+
+        $candidate = new Candidate();
+        if (!$candidate->selectByUserId($this->userAuthId)) {
+            $this->call(404, 'not_found', 'Cadastro do candidato não encontrado.', 'error')->back();
+            return;
+        }
+
+        $passes = (new VacancyPass())->selectAll(
+            ['candidate_user_id = :candidate_user_id'],
+            'created_at',
+            'DESC',
+            [':candidate_user_id' => $this->userAuthId]
+        );
+
+        $this->call(200, 'success', 'Vagas dispensadas encontradas.', 'success')->back(
+            array_map(static fn($pass) => [
+                'id' => (int)$pass->id,
+                'vacancy_id' => (int)$pass->vacancy_id,
+                'created_at' => $pass->created_at
+            ], $passes)
+        );
     }
 
     /**
@@ -314,6 +392,7 @@ class Interactions extends Api
                     'candidate' => [
                         'user_id' => $candidate->getUserId(),
                         'full_name' => $candidate->getFullName(),
+                        'photo' => $candidateUser->getPhoto(),
                         'location' => $candidate->getLocation(),
                         'areas' => (new CandidateArea())->selectByCandidateId((int)$candidate->getId()),
                         'salary_expectation' => $candidate->getSalaryExpectation(),

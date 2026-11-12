@@ -43,7 +43,20 @@ class CandidateArea extends Model
     {
         try {
             $stmt = Connect::getInstance()->prepare(
-                "SELECT * FROM {$this->table} WHERE candidate_id = :candidate_id ORDER BY id ASC"
+                "SELECT
+                    ca.*,
+                    a.name AS area_name,
+                    CASE
+                        WHEN a.name = 'Outras'
+                             AND ca.custom_area IS NOT NULL
+                             AND ca.custom_area <> ''
+                        THEN ca.custom_area
+                        ELSE a.name
+                    END AS display_name
+                 FROM {$this->table} ca
+                 INNER JOIN areas a ON a.id = ca.area_id
+                 WHERE ca.candidate_id = :candidate_id
+                 ORDER BY a.name ASC, ca.id ASC"
             );
             $stmt->bindValue(':candidate_id', $candidateId, PDO::PARAM_INT);
             $stmt->execute();

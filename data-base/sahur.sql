@@ -15,6 +15,10 @@ DROP TABLE IF EXISTS matches;
 
 DROP TABLE IF EXISTS company_likes;
 
+DROP TABLE IF EXISTS vacancy_passes;
+
+DROP TABLE IF EXISTS vacancy_images;
+
 DROP TABLE IF EXISTS vacancy_likes;
 
 DROP TABLE IF EXISTS interactions;
@@ -45,7 +49,7 @@ DROP TABLE IF EXISTS users;
 
 DROP TABLE IF EXISTS user_types;
 
-DROP TABLE IF EXISTS vacancy_images;
+
 
 
 -- =========================================================
@@ -381,6 +385,31 @@ CREATE TABLE vacancy_likes (
     ON DELETE CASCADE,
 
     CONSTRAINT fk_vacancy_likes_vacancy
+    FOREIGN KEY (vacancy_id)
+    REFERENCES vacancies(id)
+    ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =========================================================
+-- VAGAS DISPENSADAS PELOS CANDIDATOS
+-- =========================================================
+
+CREATE TABLE vacancy_passes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    candidate_user_id INT NOT NULL,
+    vacancy_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(candidate_user_id, vacancy_id),
+
+    CONSTRAINT fk_vacancy_passes_candidate
+    FOREIGN KEY (candidate_user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE,
+
+    CONSTRAINT fk_vacancy_passes_vacancy
     FOREIGN KEY (vacancy_id)
     REFERENCES vacancies(id)
     ON DELETE CASCADE

@@ -140,7 +140,7 @@ matchesGrid?.addEventListener("click", (event) => {
     localStorage.setItem("matchSelecionado", card.dataset.matchId);
 
     window.location.href =
-        `./chat?matchId=${encodeURIComponent(card.dataset.matchId)}`;
+        `./chat.html?matchId=${encodeURIComponent(card.dataset.matchId)}`;
 });
 
 // BOTÕES

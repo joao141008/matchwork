@@ -15,6 +15,20 @@ export default class InteractionService extends HttpClientBase {
         return super.get("/interactions/candidate/list");
     }
 
+    // Registra que o candidato não deseja seguir com uma vaga.
+    async registerCandidatePass(vacancyId) {
+        this.#validateId(vacancyId, "vaga");
+
+        return super.post("/interactions/candidate/pass", {
+            vacancy_id: Number(vacancyId)
+        });
+    }
+
+    // Recupera as vagas que o candidato já dispensou.
+    async listCandidatePasses() {
+        return super.get("/interactions/candidate/passes");
+    }
+
     async listCompanyLikes() {
         return super.get("/interactions/company/list");
     }
