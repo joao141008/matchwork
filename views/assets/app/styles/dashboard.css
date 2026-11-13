@@ -379,17 +379,17 @@ body {
     flex: 0 0 48px;
 }
 
-.profile-avatar #profileAvatarInitial,
-.profile-avatar img {
+.profile-avatar #profileAvatarInitial {
+    display: flex;
     width: 100%;
     height: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .profile-avatar img {
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
 }
 
 .profile-avatar img[hidden] {
@@ -1169,12 +1169,6 @@ body {
     touch-action: pan-y;
     user-select: none;
 }
-.vacancy-gallery-image {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
 .vacancy-gallery-image.gallery-slide-in { animation: vacancyGallerySlide .24s ease; }
 .vacancy-gallery-image.image-load-error { opacity: .25; }
 .vacancy-gallery-arrow {
@@ -1322,7 +1316,7 @@ body {
 }
 .swipe-action.is-loading { transform: scale(.98); }
 
-.vacancy-gallery-image { cursor: zoom-in; }
+.vacancy-gallery .vacancy-gallery-image { cursor: zoom-in; }
 .vacancy-gallery-zoom {
     position: absolute;
     top: 12px;

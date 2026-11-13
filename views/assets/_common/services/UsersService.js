@@ -39,6 +39,21 @@ export default class Users extends HttpClientBase {
         return super.delete(`/users/delete/${userId}`);
     }
 
+    async me() {
+        return this.get("/users/me");
+    }
+
+    async uploadPhoto(file) {
+        if (!(file instanceof Blob)) {
+            throw new TypeError("Selecione um arquivo de imagem válido.");
+        }
+
+        const formData = new FormData();
+        formData.append("photo", file, file.name || "profile-photo");
+
+        return this.postForm("/users/photo", formData);
+    }
+
     async list(data = {}) {
         return this.get("/users/list", data);
     }

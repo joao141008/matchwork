@@ -1,0 +1,12 @@
+/*
+ * Estilo compartilhado para imagens de mídia do MatchWork.
+ * A classe é usada pela galeria de vagas, pelo perfil e pelo avatar do dashboard.
+ */
+.vacancy-gallery-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    image-rendering: auto;
+}

@@ -185,12 +185,19 @@ class Candidate extends Model
     }
 
 
-    public function cpfExists(): bool
+    public function cpfExists(?int $ignoreCandidateId = null): bool
     {
         $query = "SELECT id FROM {$this->table} WHERE cpf = :cpf";
+        if ($ignoreCandidateId !== null) {
+            $query .= ' AND id <> :ignore_id';
+        }
+        $query .= ' LIMIT 1';
 
         $stmt = Connect::getInstance()->prepare($query);
-        $stmt->bindValue(":cpf", $this->cpf);
+        $stmt->bindValue(':cpf', $this->cpf);
+        if ($ignoreCandidateId !== null) {
+            $stmt->bindValue(':ignore_id', $ignoreCandidateId, \PDO::PARAM_INT);
+        }
         $stmt->execute();
 
         return $stmt->fetchColumn() !== false;

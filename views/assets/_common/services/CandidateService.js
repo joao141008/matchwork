@@ -52,6 +52,8 @@ export default class CandidateService extends HttpClientBase {
                     );
                 }
 
+                formData.append("areas_present", "1");
+
                 value.forEach((area, index) => {
                     const areaId = Number(area?.area_id);
 

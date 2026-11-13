@@ -290,6 +290,10 @@ class Companies extends Api
             return;
         }
 
+        if (!array_key_exists('areas', $data) && array_key_exists('areas_present', $data)) {
+            $data['areas'] = [];
+        }
+
         if (array_key_exists('areas', $data) && !is_array($data['areas'])) {
             $this->call(400, 'bad_request', 'O campo areas deve ser uma lista.', 'error')->back();
             return;

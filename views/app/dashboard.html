@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — MatchWork</title>
     <link rel="stylesheet" href="../assets/app/styles/dashboard.css">
+    <link rel="stylesheet" href="../assets/app/styles/media.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
@@ -19,7 +20,7 @@
                 </button>
                 <button class="btn-icon profile-avatar" id="btnPerfil" type="button" title="Meu perfil" aria-label="Abrir meu perfil">
                     <span id="profileAvatarInitial" aria-hidden="true">?</span>
-                    <img id="profileAvatarImage" alt="" hidden>
+                    <img id="profileAvatarImage" class="vacancy-gallery-image" alt="Foto de perfil" width="96" height="96" decoding="async" hidden>
                 </button>
                 <button class="btn-icon" id="btnSair" type="button" title="Sair" aria-label="Sair">
                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -237,5 +238,6 @@
     <script type="module" src="../assets/app/scripts/vacancy-media.js"></script>
     <script type="module" src="../assets/app/scripts/vacancy-gallery.js"></script>
     <script type="module" src="../assets/app/scripts/company-interested-shortcut.js"></script>
+    <script src="../assets/_common/scripts/page-refresh.js" defer></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080f15">
 
   <title>Admin - MatchWork</title>
 
@@ -15,25 +16,30 @@
 
   <article class="container">
 
-    <!-- HEADER -->
+    <!-- CABEÇALHO -->
     <header class="admin-header">
+      <span class="admin-eyebrow">MATCHWORK • ADMINISTRAÇÃO</span>
       <h1>Painel Administrativo</h1>
-      <p>Gerencie a plataforma de matches profissionais</p>
+      <p>Gerencie a plataforma e acompanhe o relacionamento com os usuários.</p>
     </header>
 
-    <!-- CARDS GERAIS -->
-    <section>
-      <h2>Dados Gerais do Sistema</h2>
+    <!-- INDICADORES GERAIS (mantidos do painel original) -->
+    <section class="admin-overview" aria-labelledby="overview-title">
+      <header class="section-title">
+        <div>
+          <span class="section-kicker">VISÃO GERAL</span>
+          <h2 id="overview-title">Dados Gerais do Sistema</h2>
+        </div>
+      </header>
 
       <article class="cards">
-
         <article class="card">
           <article>
             <h3>Total de Matches</h3>
             <span>1.247</span>
             <p>Conexões realizadas</p>
           </article>
-          <i class="fa-regular fa-heart"></i>
+          <i class="fa-regular fa-heart" aria-hidden="true"></i>
         </article>
 
         <article class="card">
@@ -42,7 +48,7 @@
             <span>342</span>
             <p>Organizações cadastradas</p>
           </article>
-          <i class="fa-regular fa-building"></i>
+          <i class="fa-regular fa-building" aria-hidden="true"></i>
         </article>
 
         <article class="card">
@@ -51,144 +57,165 @@
             <span>1.856</span>
             <p>Profissionais cadastrados</p>
           </article>
-          <i class="fa-regular fa-user"></i>
+          <i class="fa-regular fa-user" aria-hidden="true"></i>
         </article>
-
       </article>
     </section>
 
-    <!-- FAQ -->
-    <section>
-
+    <!-- GERENCIAMENTO DE FAQ (mantido) -->
+    <section class="admin-faq-section" aria-labelledby="faq-title">
       <article class="titulo">
         <article>
-          <h2>Perguntas Frequentes</h2>
-          <p>Gerencie FAQ do sistema</p>
+          <span class="section-kicker">CONTEÚDO DA PLATAFORMA</span>
+          <h2 id="faq-title">Perguntas Frequentes</h2>
+          <p>Gerencie as dúvidas e respostas exibidas aos usuários.</p>
         </article>
 
-        <button>
-          <i class="fa-solid fa-plus"></i>
+        <button type="button">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
           Adicionar Pergunta
         </button>
       </article>
 
-      <article class="faq">
-          <!-- agora isso vem do banco de dados -->
+      <article class="faq" aria-live="polite">
+        <!-- As perguntas são carregadas do banco de dados. -->
       </article>
     </section>
 
-    <!-- DENÚNCIAS -->
-    <section>
+    <!-- CENTRAL DE SUPORTE -->
+    <section class="admin-support" id="admin-support" aria-labelledby="support-title">
 
-      <h2>Ranking de Denúncias</h2>
-      <p>Usuários mais denunciados</p>
+      <header class="support-heading">
+        <div>
+          <span class="section-kicker">RELACIONAMENTO COM USUÁRIOS</span>
+          <h2 id="support-title">Central de suporte</h2>
+          <p>Receba, organize e responda as solicitações enviadas pelos perfis do MatchWork.</p>
+        </div>
 
-      <article class="ranking">
+        <button type="button" id="support-refresh-button" class="support-refresh">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+          Atualizar solicitações
+        </button>
+      </header>
 
-        <article class="usuario">
-          <article class="info">
-            <article class="posicao">1°</article>
-            <img src="https://i.pravatar.cc/60?img=5">
-            <article>
-              <h3>TechCorp</h3>
-              <span>Empresa • 15 denúncias</span>
-            </article>
-          </article>
-          <button>Excluir Conta</button>
+      <!-- INDICADORES DINÂMICOS -->
+      <section class="support-stats" aria-label="Resumo das solicitações">
+        <article class="support-stat">
+          <span class="support-stat-label">Total recebidas</span>
+          <strong id="support-stat-total">—</strong>
+          <span class="support-stat-caption">Todos os tipos</span>
+          <i class="fa-solid fa-inbox" aria-hidden="true"></i>
         </article>
 
-        <article class="usuario">
-          <article class="info">
-            <article class="posicao">2°</article>
-            <img src="https://i.pravatar.cc/60?img=15">
-            <article>
-              <h3>João Silva</h3>
-              <span>Candidato • 12 denúncias</span>
-            </article>
-          </article>
-          <button>Excluir Conta</button>
+        <article class="support-stat is-pending">
+          <span class="support-stat-label">Aguardando resposta</span>
+          <strong id="support-stat-open">—</strong>
+          <span class="support-stat-caption">Precisam de atendimento</span>
+          <i class="fa-regular fa-clock" aria-hidden="true"></i>
         </article>
 
-      </article>
-    </section>
-
-    <!-- ========================= -->
-    <!-- CENTRAL DE SUPORTE NOVA -->
-    <!-- ========================= -->
-    <section class="admin-support">
-
-      <article class="section-header">
-        <h2>Central de Solicitações</h2>
-        <p>Gerencie perguntas, problemas e sugestões dos usuários</p>
-      </article>
-
-      <!-- TABS -->
-      <nav class="admin-tabs">
-
-        <button class="admin-tab active" data-tab="questions">Perguntas</button>
-        <button class="admin-tab" data-tab="reports">Problemas / Denúncias</button>
-        <button class="admin-tab" data-tab="suggestions">Sugestões</button>
-
-      </nav>
-
-      <!-- PERGUNTAS -->
-      <section id="questions" class="admin-tab-content active">
-
-        <article class="ticket">
-          <article>
-            <h3>Como funciona o sistema de matches?</h3>
-            <p>Usuário quer entender compatibilidade.</p>
-          </article>
-
-          <article class="ticket-actions">
-            <button><i class="fa-solid fa-eye"></i></button>
-            <button><i class="fa-solid fa-trash"></i></button>
-          </article>
+        <article class="support-stat is-answered">
+          <span class="support-stat-label">Respondidas</span>
+          <strong id="support-stat-answered">—</strong>
+          <span class="support-stat-caption">Atendimentos concluídos</span>
+          <i class="fa-solid fa-check-double" aria-hidden="true"></i>
         </article>
 
+        <article class="support-stat is-reports">
+          <span class="support-stat-label">Denúncias</span>
+          <strong id="support-stat-reports">—</strong>
+          <span class="support-stat-caption">Enviadas pelo suporte</span>
+          <i class="fa-solid fa-flag" aria-hidden="true"></i>
+        </article>
       </section>
 
-      <!-- PROBLEMAS -->
-      <section id="reports" class="admin-tab-content">
+      <!-- CAIXA DE ENTRADA + LISTA -->
+      <section class="support-workspace">
 
-        <article class="ticket danger">
-          <article>
-            <h3>Empresa enviando spam</h3>
-            <p>Denúncia contra comportamento abusivo.</p>
-          </article>
+        <aside class="support-sidebar" aria-label="Categorias de solicitações">
+          <div class="support-sidebar-heading">
+            <span>Caixa de entrada</span>
+            <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+          </div>
 
-          <article class="ticket-actions">
-            <button><i class="fa-solid fa-eye"></i></button>
-            <button><i class="fa-solid fa-ban"></i></button>
-          </article>
-        </article>
+          <nav class="admin-tabs" aria-label="Filtrar por categoria">
+            <button type="button" class="admin-tab active" data-tab="all" aria-pressed="true">
+              <span><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Todas</span>
+              <span class="tab-count" id="support-count-all">0</span>
+            </button>
 
+            <button type="button" class="admin-tab" data-tab="question" aria-pressed="false">
+              <span><i class="fa-regular fa-circle-question" aria-hidden="true"></i> Perguntas</span>
+              <span class="tab-count" id="support-count-question">0</span>
+            </button>
+
+            <button type="button" class="admin-tab" data-tab="report" aria-pressed="false">
+              <span><i class="fa-solid fa-flag" aria-hidden="true"></i> Denúncias</span>
+              <span class="tab-count" id="support-count-report">0</span>
+            </button>
+
+            <button type="button" class="admin-tab" data-tab="suggestion" aria-pressed="false">
+              <span><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Sugestões</span>
+              <span class="tab-count" id="support-count-suggestion">0</span>
+            </button>
+
+            <button type="button" class="admin-tab" data-tab="bug" aria-pressed="false">
+              <span><i class="fa-solid fa-bug" aria-hidden="true"></i> Problemas / Bugs</span>
+              <span class="tab-count" id="support-count-bug">0</span>
+            </button>
+          </nav>
+
+          <div class="support-sidebar-note">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <p>As solicitações aparecem aqui assim que são enviadas pelo perfil do usuário.</p>
+          </div>
+        </aside>
+
+        <section class="support-main" aria-label="Solicitações recebidas">
+
+          <div class="support-toolbar">
+            <label class="support-search" for="support-search">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <input
+                type="search"
+                id="support-search"
+                placeholder="Buscar por assunto, mensagem ou usuário..."
+                autocomplete="off"
+              >
+            </label>
+
+            <label class="support-status-filter" for="support-status-filter">
+              <span>Status</span>
+              <select id="support-status-filter">
+                <option value="all">Todos</option>
+                <option value="open">Aguardando resposta</option>
+                <option value="answered">Respondidas</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="support-list-heading">
+            <div>
+              <h3 id="support-current-category">Todas as solicitações</h3>
+              <p id="support-results-count">Carregando solicitações...</p>
+            </div>
+          </div>
+
+          <div id="support-ticket-list" class="support-ticket-list" aria-live="polite" aria-busy="true">
+            <p class="support-list-status">
+              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              Carregando solicitações...
+            </p>
+          </div>
+
+        </section>
       </section>
-
-      <!-- SUGESTÕES -->
-      <section id="suggestions" class="admin-tab-content">
-
-        <article class="ticket good">
-          <article>
-            <h3>Filtro por salário</h3>
-            <p>Usuário sugeriu melhoria na busca.</p>
-          </article>
-
-          <article class="ticket-actions">
-            <button><i class="fa-solid fa-eye"></i></button>
-            <button><i class="fa-solid fa-check"></i></button>
-          </article>
-        </article>
-
-      </section>
-
     </section>
 
   </article>
 
-  <!-- JS TABS -->
   <script type="module" src="../assets/admin/scripts/admin.js"></script>
-
+  <script src="../assets/_common/scripts/page-refresh.js" defer></script>
 </body>
 
 </html>

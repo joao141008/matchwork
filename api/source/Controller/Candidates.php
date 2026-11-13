@@ -143,6 +143,10 @@ class Candidates extends Api
             return;
         }
 
+        if (!array_key_exists('areas', $data) && array_key_exists('areas_present', $data)) {
+            $data['areas'] = [];
+        }
+
         if (array_key_exists('areas', $data) && !is_array($data['areas'])) {
             $this->call(400, 'bad_request', 'O campo areas deve ser uma lista.', 'error')->back();
             return;
@@ -159,8 +163,27 @@ class Candidates extends Api
             return;
         }
 
+        if (array_key_exists('cpf', $data)) {
+            if (!is_scalar($data['cpf']) || trim((string) $data['cpf']) === '' || strlen(trim((string) $data['cpf'])) > 14) {
+                $this->call(400, 'bad_request', 'Informe um CPF válido com até 14 caracteres.', 'error')->back();
+                return;
+            }
+
+            $newCpf = trim((string) $data['cpf']);
+            if ($newCpf !== $candidate->getCpf()) {
+                $cpfCheck = new Candidate();
+                $cpfCheck->setCpf($newCpf);
+                if ($cpfCheck->cpfExists((int) $candidate->getId())) {
+                    $this->call(409, 'conflict', 'CPF já cadastrado.', 'error')->back();
+                    return;
+                }
+            }
+        }
+
         $fields = [
             'full_name' => 'setFullName',
+            'cpf' => 'setCpf',
+            'interest_area' => 'setInterestArea',
             'location' => 'setLocation',
             'salary_expectation' => 'setSalaryExpectation',
             'work_schedule' => 'setWorkSchedule',

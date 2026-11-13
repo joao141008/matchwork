@@ -3,6 +3,12 @@
 namespace Source\Controller;
 
 use Source\Models\User;
+use Source\Models\Candidate;
+use Source\Models\CandidateArea;
+use Source\Models\Company;
+use Source\Models\CompanyArea;
+use Source\Support\ProfilePhotoUpload;
+use RuntimeException;
 
 class Users extends Api
 {
@@ -43,6 +49,172 @@ class Users extends Api
         }
 
         $this->call(200, 'success', 'Usuário encontrado.', 'success')->back($response);
+    }
+
+    /**
+     * Retorna os dados básicos do usuário autenticado, incluindo a URL pública da foto.
+     */
+    public function me(array $data = []): void
+    {
+        if (!$this->authToken([1, 2, 3, 4])) {
+            $this->call(401, 'unauthorized', 'Usuário não autenticado.', 'error')->back();
+            return;
+        }
+
+        $user = new User();
+
+        if (!$user->selectById((int) $this->userAuthId)) {
+            $this->call(404, 'not_found', 'Usuário não encontrado.', 'error')->back();
+            return;
+        }
+
+        $profileData = [
+            'id' => $user->getId(),
+            'type_id' => $user->getTypeId(),
+            'email' => $user->getEmail(),
+            'photo' => $user->getPhoto(),
+            'photo_url' => $this->formatPhotoUrl($user->getPhoto())
+        ];
+
+        if ((int) $user->getTypeId() === 3) {
+            $candidate = new Candidate();
+            if ($candidate->selectByUserId((int) $this->userAuthId)) {
+                $profileData['candidate'] = [
+                    'id' => $candidate->getId(),
+                    'full_name' => $candidate->getFullName(),
+                    'cpf' => $candidate->getCpf(),
+                    'location' => $candidate->getLocation(),
+                    'interest_area' => $candidate->getInterestArea(),
+                    'salary_expectation' => $candidate->getSalaryExpectation(),
+                    'work_schedule' => $candidate->getWorkSchedule(),
+                    'shift' => $candidate->getShift(),
+                    'work_model' => $candidate->getWorkModel(),
+                    'employment_type' => $candidate->getEmploymentType(),
+                    'about' => $candidate->getAbout(),
+                    'areas' => (new CandidateArea())->selectByCandidateId((int) $candidate->getId())
+                ];
+            }
+        } elseif ((int) $user->getTypeId() === 4) {
+            $company = new Company();
+            if ($company->selectByUserId((int) $this->userAuthId)) {
+                $profileData['company'] = [
+                    'id' => $company->getId(),
+                    'company_name' => $company->getCompanyName(),
+                    'cnpj' => $company->getCnpj(),
+                    'location' => $company->getLocation(),
+                    'website' => $company->getWebsite(),
+                    'company_size' => $company->getCompanySize(),
+                    'industry' => $company->getIndustry(),
+                    'description' => $company->getDescription(),
+                    'areas' => (new CompanyArea())->selectByCompanyId((int) $company->getId())
+                ];
+            }
+        }
+
+        $this->call(200, 'success', 'Dados do usuário carregados.', 'success')->back($profileData);
+    }
+
+    /**
+     * Recebe uma foto multipart/form-data e salva seu caminho em users.photo.
+     */
+    public function uploadPhoto(array $data = []): void
+    {
+        if (!$this->authToken([1, 2, 3, 4])) {
+            $this->call(401, 'unauthorized', 'Usuário não autenticado.', 'error')->back();
+            return;
+        }
+
+        if (!isset($_FILES['photo']) || !is_array($_FILES['photo'])) {
+            $this->call(400, 'bad_request', 'Selecione uma foto de perfil.', 'error')->back();
+            return;
+        }
+
+        $user = new User();
+
+        if (!$user->selectById((int) $this->userAuthId)) {
+            $this->call(404, 'not_found', 'Usuário não encontrado.', 'error')->back();
+            return;
+        }
+
+        $uploader = new ProfilePhotoUpload();
+
+        try {
+            $newPhotoPath = $uploader->store($_FILES['photo']);
+        } catch (RuntimeException $exception) {
+            $this->call(400, 'bad_request', $exception->getMessage(), 'error')->back();
+            return;
+        } catch (\Throwable $exception) {
+            error_log('[MatchWork] Falha no upload da foto de perfil: ' . $exception->getMessage());
+            $this->call(500, 'internal_server_error', 'Não foi possível armazenar a foto de perfil.', 'error')->back();
+            return;
+        }
+
+        $oldPhotoPath = $user->getPhoto();
+        $user->setPhoto($newPhotoPath);
+
+        if (!$user->updateById((int) $this->userAuthId)) {
+            $uploader->delete($newPhotoPath);
+            $this->call(500, 'internal_server_error', 'Não foi possível salvar a foto no cadastro do usuário.', 'error')->back();
+            return;
+        }
+
+        // A foto anterior só é removida depois da atualização bem-sucedida no banco.
+        if ($oldPhotoPath && $oldPhotoPath !== $newPhotoPath) {
+            $uploader->delete($oldPhotoPath);
+        }
+
+        $this->call(200, 'success', 'Foto de perfil atualizada com sucesso.', 'success')->back([
+            'photo' => $newPhotoPath,
+            'photo_url' => $this->formatPhotoUrl($newPhotoPath)
+        ]);
+    }
+
+    /**
+     * Converte o caminho armazenado no banco em uma URL pública da API.
+     */
+    private function formatPhotoUrl(?string $photoPath): ?string
+    {
+        if ($photoPath === null || trim($photoPath) === '') {
+            return null;
+        }
+
+        $photoPath = trim($photoPath);
+
+        // Compatibilidade com registros antigos que já armazenavam uma URL.
+        if (
+            preg_match('~^https?://~i', $photoPath) ||
+            str_starts_with($photoPath, 'data:image/')
+        ) {
+            return $photoPath;
+        }
+
+        if (str_starts_with($photoPath, '/')) {
+            return $photoPath;
+        }
+
+        $scriptDirectory = dirname(
+            (string) ($_SERVER['SCRIPT_NAME'] ?? '/api/index.php')
+        );
+
+        $apiDirectory = rtrim(
+            str_replace('\\', '/', $scriptDirectory),
+            '/'
+        );
+
+        if ($apiDirectory === '' || $apiDirectory === '.') {
+            $apiDirectory = '/api';
+        }
+
+        if ($apiDirectory[0] !== '/') {
+            $apiDirectory = '/' . $apiDirectory;
+        }
+
+        $normalizedPath = ltrim(
+            str_replace('\\', '/', $photoPath),
+            '/'
+        );
+
+        return $apiDirectory . '/' . $normalizedPath;
     }
 
     public function register(array $data): void
@@ -137,6 +309,7 @@ class Users extends Api
             'id' => $user->getId(),
             'type_id' => $user->getTypeId(),
             'photo' => $user->getPhoto(),
+            'photo_url' => $this->formatPhotoUrl($user->getPhoto()),
             'token' => $user->getToken()
         ]);
     }
@@ -231,7 +404,16 @@ class Users extends Api
             return;
         }
 
-        $this->call(200, 'success', 'Usuário atualizado com sucesso.', 'success')->back();
+        $newToken = (new \Source\Core\JWTToken())->encode([
+            'id' => $this->userAuthId,
+            'email' => $user->getEmail(),
+            'type_id' => $user->getTypeId()
+        ]);
+
+        $this->call(200, 'success', 'Usuário atualizado com sucesso.', 'success')->back([
+            'token' => $newToken,
+            'email' => $user->getEmail()
+        ]);
     }
 
     public function deleteUser(array $data): void

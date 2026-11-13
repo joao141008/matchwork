@@ -577,6 +577,8 @@ CREATE TABLE questions (
 
     user_id INT NOT NULL,
 
+    request_type ENUM('question', 'report', 'bug', 'suggestion') NOT NULL DEFAULT 'question',
+
     subject VARCHAR(255) NOT NULL,
 
     question TEXT NOT NULL,

@@ -5,6 +5,7 @@ import Area from "../../_common/classes/Area.js";
 import VacancyService from "../../_common/services/VacancyService.js";
 import AreaService from "../../_common/services/AreaService.js";
 import InteractionService from "../../_common/services/InteractionService.js";
+import UsersService from "../../_common/services/UsersService.js";
 
 import {
     TIPO,
@@ -19,6 +20,7 @@ const tipoUsuario = pegarTipo();
 const vacancyService = new VacancyService();
 const areaService = new AreaService();
 const interactionService = new InteractionService();
+const usersService = new UsersService();
 
 const headerFilters = document.querySelector("#headerFilters");
 const avatarInitial = document.querySelector("#profileAvatarInitial");
@@ -60,9 +62,10 @@ async function inicializarDashboard() {
     vacancyService.setAuthToken(token);
     areaService.setAuthToken(token);
     interactionService.setAuthToken(token);
+    usersService.setAuthToken(token);
 
     configurarNavegacao();
-    configurarAvatar();
+    await configurarAvatar();
 
     if (tipoUsuario === TIPO.CANDIDATO) {
         candidateDashboard.hidden = false;
@@ -127,7 +130,7 @@ function configurarNavegacao() {
     });
 }
 
-function configurarAvatar() {
+async function configurarAvatar() {
     const nome =
         localStorage.getItem("name") ||
         localStorage.getItem("full_name") ||
@@ -141,19 +144,46 @@ function configurarAvatar() {
         : (partes[0]?.[0] || "U");
 
     avatarInitial.textContent = iniciais.toLocaleUpperCase("pt-BR");
+    avatarInitial.hidden = false;
+    avatarImage.hidden = true;
 
-    const foto = localStorage.getItem("profile_photo") || localStorage.getItem("photo");
+    // A foto oficial é carregada do servidor, não de uma cópia local em base64.
+    localStorage.removeItem("profile_photo");
+    localStorage.removeItem("photo");
 
-    if (!foto) return;
+    try {
+        const response = await usersService.me();
 
-    avatarImage.src = foto;
-    avatarImage.hidden = false;
-    avatarInitial.hidden = true;
+        if (response?.status !== "success") {
+            throw new Error(response?.message || "Não foi possível carregar a foto de perfil.");
+        }
 
-    avatarImage.addEventListener("error", () => {
+        const photoUrl = response.data?.photo_url;
+
+        if (!photoUrl) {
+            return;
+        }
+
+        avatarImage.onload = () => {
+            avatarImage.hidden = false;
+            avatarInitial.hidden = true;
+        };
+
+        avatarImage.onerror = () => {
+            avatarImage.hidden = true;
+            avatarInitial.hidden = false;
+        };
+
+        // Evita que o navegador reaproveite uma versão antiga da mesma foto.
+        const photoUrlWithVersion = new URL(photoUrl, window.location.href);
+        photoUrlWithVersion.searchParams.set("mwv", String(Date.now()));
+        avatarImage.src = photoUrlWithVersion.href;
+
+    } catch (error) {
+        console.warn("Não foi possível carregar a foto do usuário:", error);
         avatarImage.hidden = true;
         avatarInitial.hidden = false;
-    }, { once: true });
+    }
 }
 
 async function carregarAreas() {
