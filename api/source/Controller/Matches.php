@@ -25,6 +25,15 @@ class Matches extends Api
             $this->userAuthId
         );
 
+        // O banco armazena o caminho relativo da foto. Convertemos para
+        // uma URL pública da API antes de entregar os dados ao frontend.
+        foreach ($matches as &$item) {
+            if (isset($item->contact_photo) && is_string($item->contact_photo)) {
+                $item->contact_photo = $this->formatPhotoUrl($item->contact_photo);
+            }
+        }
+        unset($item);
+
         if ($match->getErrorMessage() !== null) {
             $this->call(
                 500,
@@ -106,5 +115,45 @@ class Matches extends Api
             'Match encontrado.',
             'success'
         )->back($match);
+    }
+
+
+    private function formatPhotoUrl(?string $photoPath): ?string
+    {
+        if ($photoPath === null || trim($photoPath) === '') {
+            return null;
+        }
+
+        $photoPath = trim($photoPath);
+
+        if (
+            preg_match('~^https?://~i', $photoPath) ||
+            str_starts_with($photoPath, 'data:image/') ||
+            str_starts_with($photoPath, '/')
+        ) {
+            return $photoPath;
+        }
+
+        $scriptDirectory = dirname(
+            (string) ($_SERVER['SCRIPT_NAME'] ?? '/api/index.php')
+        );
+
+        $apiDirectory = rtrim(
+            str_replace('\\', '/', $scriptDirectory),
+            '/'
+        );
+
+        if ($apiDirectory === '' || $apiDirectory === '.') {
+            $apiDirectory = '/api';
+        }
+
+        if ($apiDirectory[0] !== '/') {
+            $apiDirectory = '/' . $apiDirectory;
+        }
+
+        return $apiDirectory . '/' . ltrim(
+            str_replace('\\', '/', $photoPath),
+            '/'
+        );
     }
 }

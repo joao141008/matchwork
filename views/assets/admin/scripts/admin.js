@@ -1,9 +1,13 @@
 import FaqService from "../../_common/services/FaqService.js";
 import QuestionService from "../../_common/services/QuestionService.js";
-import { pegarToken, pegarTipo } from "../../_common/scripts/sessao.js";
+import AdminDashboardService from "../../_common/services/AdminDashboardService.js";
+import ReportsService from "../../_common/services/ReportsService.js";
+import { pegarToken, pegarTipo, limparSessao } from "../../_common/scripts/sessao.js";
 
 const faqService = new FaqService();
 const questionService = new QuestionService();
+const adminDashboardService = new AdminDashboardService();
+const reportsService = new ReportsService();
 const adminToken = pegarToken();
 
 if (!adminToken || Number(pegarTipo()) !== 1) {
@@ -11,7 +15,15 @@ if (!adminToken || Number(pegarTipo()) !== 1) {
 } else {
   faqService.setAuthToken(adminToken);
   questionService.setAuthToken(adminToken);
+  adminDashboardService.setAuthToken(adminToken);
+  reportsService.setAuthToken(adminToken);
 }
+
+// Mantém a saída administrativa no mesmo canto superior direito do dashboard.
+document.getElementById("btnAdminSair")?.addEventListener("click", () => {
+  limparSessao();
+  window.location.href = "../public/login.html";
+});
 
 /* =========================================================
    UTILITÁRIOS
@@ -372,8 +384,9 @@ loadFaqs();
 
 /* =========================================================
    CENTRAL DE SUPORTE
-   Os quatro tipos vêm de questions.request_type:
-   question, report, suggestion e bug.
+   A central atende perguntas, sugestões e problemas/bugs.
+   Denúncias de perfis são tratadas exclusivamente no painel
+   de moderação acima, vinculado à tabela reports.
 ========================================================= */
 
 const supportConfig = {
@@ -381,11 +394,6 @@ const supportConfig = {
     label: "Pergunta",
     plural: "Perguntas",
     icon: "fa-circle-question"
-  },
-  report: {
-    label: "Denúncia",
-    plural: "Denúncias",
-    icon: "fa-flag"
   },
   suggestion: {
     label: "Sugestão",
@@ -402,7 +410,6 @@ const supportConfig = {
 const supportTypeNames = {
   all: "Todas as solicitações",
   question: "Perguntas",
-  report: "Denúncias",
   suggestion: "Sugestões",
   bug: "Problemas / Bugs"
 };
@@ -441,10 +448,8 @@ function updateSupportCounters() {
     "support-stat-total": supportRequests.length,
     "support-stat-open": open,
     "support-stat-answered": answered,
-    "support-stat-reports": countByType.report,
     "support-count-all": supportRequests.length,
     "support-count-question": countByType.question,
-    "support-count-report": countByType.report,
     "support-count-suggestion": countByType.suggestion,
     "support-count-bug": countByType.bug
   };
@@ -609,7 +614,14 @@ async function loadSupportRequests() {
       throw new Error(response?.message || "Não foi possível carregar as solicitações.");
     }
 
-    supportRequests = Array.isArray(response.data) ? response.data : [];
+    const allRequests = Array.isArray(response.data) ? response.data : [];
+
+    // Registros antigos classificados como denúncia deixam de aparecer aqui:
+    // denúncias de perfis são acompanhadas no painel de moderação superior.
+    supportRequests = allRequests.filter(request =>
+      String(request?.request_type || "question").toLowerCase() !== "report"
+    );
+
     renderSupportRequests();
   } catch (error) {
     console.error("Erro ao carregar a central de suporte:", error);
@@ -809,3 +821,498 @@ toastStyles.textContent = `
 }
 `;
 document.head.appendChild(toastStyles);
+
+
+/* =========================================================
+   INDICADORES DO PAINEL ADMINISTRATIVO
+   Dados reais: matches, candidatos e empresas ativos.
+========================================================= */
+
+async function loadAdminDashboardStats() {
+  const targets = {
+    total_matches: "stat-total-matches",
+    total_companies: "stat-total-companies",
+    total_candidates: "stat-total-candidates"
+  };
+
+  try {
+    const response = await adminDashboardService.stats();
+
+    if (response?.type !== "success") {
+      throw new Error(response?.message || "Não foi possível carregar os indicadores.");
+    }
+
+    const data = response.data || {};
+
+    Object.entries(targets).forEach(([field, elementId]) => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.textContent = Number(data[field] || 0).toLocaleString("pt-BR");
+      }
+    });
+  } catch (error) {
+    console.error("Erro ao carregar indicadores administrativos:", error);
+
+    Object.values(targets).forEach(elementId => {
+      const element = document.getElementById(elementId);
+      if (element) element.textContent = "—";
+    });
+
+    toast("Não foi possível atualizar os indicadores gerais.");
+  }
+}
+
+/* =========================================================
+   DENÚNCIAS REAIS
+   A tabela reports identifica user_id e reported_user_id.
+   O gráfico agrupa as denúncias pelo usuário denunciado.
+========================================================= */
+
+const reportStatusLabels = {
+  pending: "Pendente",
+  reviewed: "Em análise",
+  resolved: "Resolvida"
+};
+
+let adminReports = [];
+let selectedReportStatus = "all";
+
+const reportChart = document.getElementById("reports-target-chart");
+const reportRecordList = document.getElementById("reports-record-list");
+const reportRefreshButton = document.getElementById("reports-refresh-button");
+const reportStatusFilter = document.getElementById("reports-status-filter");
+
+function getReportTargetLabel(report) {
+  const type = String(report?.reported_type || "").toLowerCase();
+
+  if (type === "empresa") return "Empresa";
+  if (type === "candidato") return "Candidato";
+  return "Usuário";
+}
+
+function getReportInitials(name = "") {
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+
+  return parts
+    .slice(0, 2)
+    .map(part => Array.from(part)[0]?.toLocaleUpperCase("pt-BR") || "")
+    .join("") || "??";
+}
+
+function getReportGroups() {
+  const groups = new Map();
+
+  adminReports.forEach(report => {
+    const targetId = Number(report.reported_user_id);
+
+    if (!Number.isInteger(targetId) || targetId < 1) return;
+
+    if (!groups.has(targetId)) {
+      groups.set(targetId, {
+        userId: targetId,
+        name: report.reported_name || report.reported_email || `Usuário #${targetId}`,
+        email: report.reported_email || "E-mail não disponível",
+        type: getReportTargetLabel(report),
+        photo: report.reported_photo || "",
+        count: 0,
+        pending: 0,
+        reviewed: 0,
+        resolved: 0
+      });
+    }
+
+    const group = groups.get(targetId);
+    group.count += 1;
+
+    const status = String(report.status || "pending").toLowerCase();
+    if (Object.hasOwn(group, status)) {
+      group[status] += 1;
+    } else {
+      group.pending += 1;
+    }
+  });
+
+  return [...groups.values()].sort((a, b) =>
+    b.count - a.count || a.name.localeCompare(b.name, "pt-BR")
+  );
+}
+
+function updateReportCounters(groups = getReportGroups()) {
+  const total = adminReports.length;
+  const pending = adminReports.filter(item => item.status === "pending").length;
+  const reviewed = adminReports.filter(item => item.status === "reviewed").length;
+
+  const values = {
+    "reports-stat-total": total,
+    "reports-stat-pending": pending,
+    "reports-stat-reviewed": reviewed,
+    "reports-stat-targets": groups.length,
+    "reports-chart-total": `${total.toLocaleString("pt-BR")} ${total === 1 ? "denúncia" : "denúncias"}`
+  };
+
+  Object.entries(values).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = String(value);
+  });
+}
+
+function renderReportChart() {
+  if (!reportChart) return;
+
+  const groups = getReportGroups();
+  updateReportCounters(groups);
+
+  if (!groups.length) {
+    reportChart.innerHTML = `
+      <article class="reports-empty">
+        <i class="fa-regular fa-chart-bar" aria-hidden="true"></i>
+        <strong>Nenhuma denúncia registrada</strong>
+        <span>Quando uma denúncia for enviada, a pessoa ou empresa denunciada aparecerá neste gráfico.</span>
+      </article>
+    `;
+    return;
+  }
+
+  const maxCount = Math.max(...groups.map(group => group.count));
+
+  reportChart.innerHTML = groups.map((group, index) => {
+    const width = Math.max(3, Math.round((group.count / maxCount) * 100));
+    const countLabel = `${group.count} ${group.count === 1 ? "denúncia" : "denúncias"}`;
+
+    return `
+      <article class="report-target-row">
+        <div class="report-target-identity">
+          <span class="report-target-avatar" aria-hidden="true">${escapeHTML(getReportInitials(group.name))}</span>
+          <div class="report-target-copy">
+            <strong>${escapeHTML(group.name)}</strong>
+            <span>${escapeHTML(group.type)} · ${escapeHTML(group.email)}</span>
+          </div>
+          <span class="report-target-position">#${index + 1}</span>
+        </div>
+
+        <div class="report-target-bar-line">
+          <div
+            class="report-target-track"
+            role="img"
+            aria-label="${escapeHTML(group.name)} recebeu ${group.count} denúncias"
+          >
+            <span class="report-target-fill" style="width: ${width}%"></span>
+          </div>
+          <strong class="report-target-count">${countLabel}</strong>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function getFilteredAdminReports() {
+  return adminReports.filter(report => {
+    if (
+      selectedReportStatus !== "all" &&
+      String(report.status || "pending") !== selectedReportStatus
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function renderAdminReportRecord(report) {
+  const status = Object.hasOwn(reportStatusLabels, report.status)
+    ? report.status
+    : "pending";
+
+  return `
+    <article class="report-record" data-report-id="${Number(report.id)}">
+      <div class="report-record-main">
+        <div class="report-record-target">
+          <span class="report-record-type">${escapeHTML(getReportTargetLabel(report))}</span>
+          <strong>${escapeHTML(report.reported_name || report.reported_email || `Usuário #${report.reported_user_id}`)}</strong>
+          <span>${escapeHTML(report.reported_email || "E-mail não disponível")}</span>
+        </div>
+
+        <div class="report-record-reason">
+          <strong>${escapeHTML(report.reason || "Motivo não informado")}</strong>
+          <p>${escapeHTML(report.description || "Nenhuma descrição adicional.")}</p>
+          <small>
+            Denunciado por ${escapeHTML(report.reporter_name || report.reporter_email || "Usuário")}
+            · ${escapeHTML(formatDate(report.created_at))}
+          </small>
+          ${report.admin_response ? `
+            <div class="report-admin-response-preview">
+              <strong><i class="fa-solid fa-reply" aria-hidden="true"></i> Parecer do administrador</strong>
+              <p>${escapeHTML(report.admin_response)}</p>
+            </div>
+          ` : `
+            <span class="report-awaiting-response">Ainda sem parecer administrativo</span>
+          `}
+        </div>
+      </div>
+
+      <div class="report-record-actions">
+        <label class="report-status-control">
+          <span>Status</span>
+          <select data-report-status>
+            <option value="pending" ${status === "pending" ? "selected" : ""}>Pendente</option>
+            <option value="reviewed" ${status === "reviewed" ? "selected" : ""}>Em análise</option>
+            <option value="resolved" ${status === "resolved" ? "selected" : ""}>Resolvida</option>
+          </select>
+        </label>
+
+        <button type="button" class="report-reply-button" data-report-action="reply">
+          <i class="fa-solid fa-reply" aria-hidden="true"></i>
+          <span>${report.admin_response ? "Editar parecer" : "Responder"}</span>
+        </button>
+
+        <button type="button" class="report-delete-button" data-report-action="delete" title="Excluir denúncia" aria-label="Excluir denúncia">
+          <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+function renderAdminReportRecords() {
+  if (!reportRecordList) return;
+
+  const filtered = getFilteredAdminReports();
+  const count = document.getElementById("reports-records-count");
+
+  if (count) {
+    count.textContent = `${filtered.length} ${filtered.length === 1 ? "registro encontrado" : "registros encontrados"}`;
+  }
+
+  if (!filtered.length) {
+    reportRecordList.innerHTML = `
+      <article class="reports-empty reports-records-empty">
+        <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+        <strong>Nenhuma denúncia neste filtro</strong>
+        <span>Altere o filtro de status ou aguarde novos registros.</span>
+      </article>
+    `;
+    return;
+  }
+
+  reportRecordList.innerHTML = filtered.map(renderAdminReportRecord).join("");
+}
+
+function renderAdminReports() {
+  renderReportChart();
+  renderAdminReportRecords();
+}
+
+async function loadAdminReports() {
+  if (!reportChart || !reportRecordList || !adminToken) return;
+
+  reportChart.setAttribute("aria-busy", "true");
+  reportRecordList.setAttribute("aria-busy", "true");
+
+  if (reportRefreshButton) {
+    reportRefreshButton.disabled = true;
+    reportRefreshButton.classList.add("is-loading");
+  }
+
+  try {
+    const response = await reportsService.list();
+
+    if (response?.type !== "success") {
+      throw new Error(response?.message || "Não foi possível carregar as denúncias.");
+    }
+
+    adminReports = Array.isArray(response.data) ? response.data : [];
+    renderAdminReports();
+  } catch (error) {
+    console.error("Erro ao carregar denúncias:", error);
+
+    reportChart.innerHTML = `
+      <article class="reports-error">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <strong>Não foi possível carregar o gráfico</strong>
+        <span>${escapeHTML(error.message || "Verifique a conexão com a API.")}</span>
+      </article>
+    `;
+
+    reportRecordList.innerHTML = `
+      <article class="reports-error">
+        <strong>Não foi possível carregar as denúncias.</strong>
+        <span>Tente atualizar os dados novamente.</span>
+      </article>
+    `;
+
+    toast("Não foi possível carregar as denúncias.");
+  } finally {
+    reportChart.setAttribute("aria-busy", "false");
+    reportRecordList.setAttribute("aria-busy", "false");
+
+    if (reportRefreshButton) {
+      reportRefreshButton.disabled = false;
+      reportRefreshButton.classList.remove("is-loading");
+    }
+  }
+}
+
+reportRefreshButton?.addEventListener("click", async () => {
+  await Promise.all([
+    loadAdminDashboardStats(),
+    loadAdminReports()
+  ]);
+});
+
+reportStatusFilter?.addEventListener("change", () => {
+  selectedReportStatus = reportStatusFilter.value;
+  renderAdminReportRecords();
+});
+
+reportRecordList?.addEventListener("change", async event => {
+  const select = event.target.closest("[data-report-status]");
+  const record = select?.closest("[data-report-id]");
+
+  if (!select || !record) return;
+
+  const reportId = Number(record.dataset.reportId);
+  const report = adminReports.find(item => Number(item.id) === reportId);
+
+  if (!report || !["pending", "reviewed", "resolved"].includes(select.value)) return;
+
+  const previousStatus = report.status || "pending";
+  const newStatus = select.value;
+
+  select.disabled = true;
+
+  try {
+    const response = await reportsService.update({
+      id: reportId,
+      status: newStatus
+    });
+
+    if (response?.type !== "success") {
+      throw new Error(response?.message || "Não foi possível atualizar o status.");
+    }
+
+    report.status = newStatus;
+    renderAdminReports();
+    toast("Status da denúncia atualizado.");
+  } catch (error) {
+    console.error("Erro ao atualizar denúncia:", error);
+    select.value = previousStatus;
+    toast(error.message || "Não foi possível atualizar a denúncia.");
+  } finally {
+    if (select.isConnected) select.disabled = false;
+  }
+});
+
+reportRecordList?.addEventListener("click", event => {
+  const actionButton = event.target.closest("[data-report-action]");
+  const record = actionButton?.closest("[data-report-id]");
+
+  if (!actionButton || !record) return;
+
+  const reportId = Number(record.dataset.reportId);
+  const report = adminReports.find(item => Number(item.id) === reportId);
+  if (!report) return;
+
+  if (actionButton.dataset.reportAction === "reply") {
+    const modal = createModal(
+      report.admin_response ? "Editar parecer da denúncia" : "Responder denúncia",
+      `
+        <div class="report-reply-context">
+          <span class="report-reply-kicker">DENÚNCIA RECEBIDA</span>
+          <strong>${escapeHTML(report.reported_name || "Perfil denunciado")}</strong>
+          <span>${escapeHTML(getReportTargetLabel(report))} · Denúncia de ${escapeHTML(report.reporter_name || "Usuário")}</span>
+          <p><b>Motivo:</b> ${escapeHTML(report.reason || "Não informado")}</p>
+          <p>${escapeHTML(report.description || "Nenhuma descrição adicional.")}</p>
+        </div>
+
+        <label class="report-reply-field" for="report-admin-response">Parecer / resposta do administrador</label>
+        <textarea id="report-admin-response" maxlength="5000" rows="6" placeholder="Registre a análise realizada, as providências tomadas ou a resposta para esta denúncia...">${escapeHTML(report.admin_response || "")}</textarea>
+        <small class="report-reply-hint">Este parecer ficará registrado junto à denúncia no painel administrativo.</small>
+
+        <label class="report-reply-field" for="report-admin-status">Situação da denúncia</label>
+        <select id="report-admin-status">
+          <option value="pending" ${report.status === "pending" ? "selected" : ""}>Pendente</option>
+          <option value="reviewed" ${report.status === "reviewed" ? "selected" : ""}>Em análise</option>
+          <option value="resolved" ${report.status === "resolved" ? "selected" : ""}>Resolvida</option>
+        </select>
+      `,
+      {
+        saveLabel: "Salvar resposta",
+        cancelLabel: "Cancelar",
+        busyLabel: "Salvando...",
+        onSave: async modalElement => {
+          const adminResponse = modalElement.querySelector("#report-admin-response").value.trim();
+          const status = modalElement.querySelector("#report-admin-status").value;
+
+          if (!adminResponse) {
+            toast("Escreva um parecer antes de salvar a resposta.");
+            return false;
+          }
+
+          if (adminResponse.length > 5000) {
+            toast("O parecer deve ter no máximo 5.000 caracteres.");
+            return false;
+          }
+
+          const response = await reportsService.update({
+            id: reportId,
+            status,
+            admin_response: adminResponse
+          });
+
+          if (response?.type !== "success") {
+            toast(response?.message || "Não foi possível salvar o parecer.");
+            return false;
+          }
+
+          report.admin_response = adminResponse;
+          report.status = status;
+          renderAdminReports();
+          toast("Resposta da denúncia salva.");
+        }
+      }
+    );
+
+    modal.querySelector(".modal")?.classList.add("report-response-modal");
+    return;
+  }
+
+  if (actionButton.dataset.reportAction !== "delete") return;
+
+  createModal(
+    "Excluir denúncia",
+    `
+      <p>Deseja realmente excluir esta denúncia?</p>
+      <div class="support-delete-summary">
+        <strong>${escapeHTML(report.reported_name || "Perfil denunciado")}</strong>
+        <span>${escapeHTML(report.reason || "Motivo não informado")}</span>
+      </div>
+      <p class="support-delete-warning">Esta ação não poderá ser desfeita.</p>
+    `,
+    {
+      saveLabel: "Excluir denúncia",
+      cancelLabel: "Cancelar",
+      busyLabel: "Excluindo...",
+      onSave: async () => {
+        try {
+          const response = await reportsService.delete(reportId);
+
+          if (response?.type !== "success") {
+            toast(response?.message || "Não foi possível excluir a denúncia.");
+            return false;
+          }
+
+          adminReports = adminReports.filter(item => Number(item.id) !== reportId);
+          renderAdminReports();
+          toast("Denúncia excluída.");
+        } catch (error) {
+          console.error("Erro ao excluir denúncia:", error);
+          toast("Não foi possível excluir a denúncia.");
+          return false;
+        }
+      }
+    }
+  );
+});
+
+loadAdminDashboardStats();
+loadAdminReports();

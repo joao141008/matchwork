@@ -41,6 +41,22 @@ class Reports extends Api
             return;
         }
 
+        // Denúncias entre perfis são feitas entre os dois tipos da plataforma:
+        // empresas podem denunciar candidatos e candidatos podem denunciar empresas.
+        $validPair =
+            ($this->userAuthTypeId === 4 && (int)$reportedUser->getTypeId() === 3) ||
+            ($this->userAuthTypeId === 3 && (int)$reportedUser->getTypeId() === 4);
+
+        if (!$validPair) {
+            $this->call(
+                403,
+                'forbidden',
+                'Empresas podem denunciar candidatos e candidatos podem denunciar empresas.',
+                'error'
+            )->back();
+            return;
+        }
+
         $report = new Report(null, $this->userAuthId, (int)$reportedUserId, $reason, $description);
         if ($report->reportExists()) {
             $this->call(409, 'conflict', 'Você já denunciou este usuário.', 'error')->back();
@@ -62,7 +78,20 @@ class Reports extends Api
         }
 
         $report = new Report();
-        $this->call(200, 'success', 'Denúncias encontradas.', 'success')->back($report->selectAll());
+        $reports = $report->selectAllWithUserDetails();
+
+        if ($report->getErrorMessage() !== null) {
+            $this->call(
+                500,
+                'internal_server_error',
+                'Não foi possível carregar as denúncias.',
+                'error'
+            )->back();
+
+            return;
+        }
+
+        $this->call(200, 'success', 'Denúncias encontradas.', 'success')->back($reports);
     }
 
     public function listById(array $data): void
@@ -100,8 +129,12 @@ class Reports extends Api
             return;
         }
 
-        if (!array_key_exists('status', $data) && !array_key_exists('description', $data)) {
-            $this->call(400, 'bad_request', 'Informe o status ou a descrição para atualizar a denúncia.', 'error')->back();
+        if (
+            !array_key_exists('status', $data) &&
+            !array_key_exists('description', $data) &&
+            !array_key_exists('admin_response', $data)
+        ) {
+            $this->call(400, 'bad_request', 'Informe o status, a descrição ou o parecer administrativo para atualizar a denúncia.', 'error')->back();
             return;
         }
 
@@ -126,7 +159,31 @@ class Reports extends Api
             $report->setDescription($data['description']);
         }
 
-        $nullableFields = array_key_exists('description', $data) && $data['description'] === null ? ['description'] : [];
+        if (array_key_exists('admin_response', $data)) {
+            if ($data['admin_response'] !== null && !is_string($data['admin_response'])) {
+                $this->call(400, 'bad_request', 'O parecer administrativo deve ser um texto.', 'error')->back();
+                return;
+            }
+
+            $adminResponse = $data['admin_response'] === null
+                ? null
+                : trim($data['admin_response']);
+
+            if ($adminResponse !== null && mb_strlen($adminResponse) > 5000) {
+                $this->call(400, 'bad_request', 'O parecer administrativo deve ter no máximo 5.000 caracteres.', 'error')->back();
+                return;
+            }
+
+            $report->setAdminResponse($adminResponse === '' ? null : $adminResponse);
+        }
+
+        $nullableFields = [];
+        if (array_key_exists('description', $data) && $data['description'] === null) {
+            $nullableFields[] = 'description';
+        }
+        if (array_key_exists('admin_response', $data) && ($data['admin_response'] === null || trim((string)$data['admin_response']) === '')) {
+            $nullableFields[] = 'adminResponse';
+        }
         if (!$report->updateById((int)$reportId, $nullableFields)) {
             $this->call(500, 'internal_server_error', 'Não foi possível atualizar a denúncia.', 'error')->back();
             return;

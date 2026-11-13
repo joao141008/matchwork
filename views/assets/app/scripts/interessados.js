@@ -120,7 +120,18 @@ function criarCardCandidato(item, vacancy, matches) {
     const title = document.createElement("div");
     title.className = "candidate-title";
     const name = document.createElement("h3");
-    name.textContent = candidate.full_name || "Candidato sem nome";
+    const profileLink = document.createElement(candidate.user_id ? "a" : "span");
+    profileLink.textContent = candidate.full_name || "Candidato sem nome";
+
+    if (candidate.user_id) {
+        profileLink.href = `./user-profile.html?userId=${encodeURIComponent(candidate.user_id)}`;
+        profileLink.className = "candidate-profile-link";
+        profileLink.setAttribute("aria-label", `Ver perfil de ${candidate.full_name || "candidato"}`);
+        profileLink.title = "Ver perfil do candidato";
+    }
+
+    name.appendChild(profileLink);
+
     const location = document.createElement("p");
     location.textContent = candidate.location || "Localização não informada";
     title.append(name, location);

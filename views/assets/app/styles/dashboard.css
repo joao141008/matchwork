@@ -659,6 +659,22 @@ body {
     font-weight: 600;
 }
 
+.vacancy-company.profile-link,
+a.vacancy-company {
+    display: inline-block;
+    color: #d8af87;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color .2s ease, opacity .2s ease;
+}
+
+a.vacancy-company:hover,
+a.vacancy-company:focus-visible {
+    color: #f0d1b2;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 .status-badge {
     flex: 0 0 auto;
     padding: 6px 11px;
@@ -1395,6 +1411,47 @@ body {
 @keyframes tinderCardEnter {
     from { opacity: 0; transform: translateY(12px) scale(.985); }
     to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Em telas de computador, mantém o card mais compacto para a vaga e as ações
+   caberem melhor na primeira dobra sem perder a experiência de swipe. */
+@media (min-width: 761px) {
+    .vacancy-swipe-deck {
+        padding-top: 0;
+        padding-bottom: 18px;
+    }
+
+    .vacancy-card.tinder-card {
+        width: min(100%, 680px);
+        padding: 18px;
+        border-radius: 24px;
+    }
+
+    .vacancy-card.tinder-card .vacancy-gallery {
+        height: clamp(190px, 29vh, 285px);
+        margin-bottom: 14px;
+        border-radius: 18px;
+    }
+
+    .vacancy-card.tinder-card .vacancy-card-header {
+        margin-bottom: 8px;
+    }
+
+    .vacancy-card.tinder-card .vacancy-description {
+        max-height: 5.5em;
+        line-height: 1.55;
+    }
+
+    .tinder-card-footer {
+        gap: 12px;
+        padding-top: 13px;
+        margin-top: 5px;
+    }
+
+    .swipe-action {
+        min-height: 54px;
+        padding: 10px 14px;
+    }
 }
 
 @media (max-width: 760px) {

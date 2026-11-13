@@ -16,12 +16,14 @@ const chatMessages = document.querySelector("#chat-messages");
 const chatName = document.querySelector("#chat-contact-name");
 const chatStatus = document.querySelector("#chat-contact-status");
 const chatImage = document.querySelector("#chat-image");
+const chatProfileLink = document.querySelector("#chat-profile-link");
 const chatForm = document.querySelector("#chat-form");
 const chatInput = document.querySelector("#chat-input");
 const sendButton = chatForm?.querySelector('button[type="submit"]');
 
 let conversationId = null;
 let currentUserId = null;
+let contactUserId = null;
 let polling = null;
 let loadedMessageIds = new Set();
 
@@ -48,16 +50,39 @@ async function inicializarChat() {
 
         const match = UserMatch.fromJSON(rawMatch);
         currentUserId = userType === TIPO.CANDIDATO ? match.candidateUserId : match.companyUserId;
+        contactUserId = Number(match.contactUserId);
+
         chatName.textContent = match.contactName || "Conversa MatchWork";
         chatStatus.textContent = "Match realizado · você já pode conversar";
 
+        const hasContactProfile = Number.isInteger(contactUserId) && contactUserId > 0;
+        chatProfileLink.disabled = !hasContactProfile;
+        chatName.disabled = !hasContactProfile;
+
+        if (hasContactProfile) {
+            const profileLabel = `Ver perfil de ${match.contactName || "contato"}`;
+            chatProfileLink.title = profileLabel;
+            chatProfileLink.setAttribute("aria-label", profileLabel);
+            chatName.title = profileLabel;
+        } else {
+            chatProfileLink.title = "Perfil indisponível";
+            chatName.title = "Perfil indisponível";
+        }
+
         if (match.contactPhoto) {
-            chatImage.src = match.contactPhoto;
             chatImage.alt = `Foto de ${match.contactName}`;
+            chatImage.addEventListener(
+                "error",
+                () => mostrarAvatarFallback(match.contactName),
+                { once: true }
+            );
+
+            const photoUrl = new URL(match.contactPhoto, window.location.href);
+            photoUrl.searchParams.set("mwv", String(Date.now()));
+            chatImage.src = photoUrl.href;
         } else {
             mostrarAvatarFallback(match.contactName);
         }
-        chatImage.addEventListener("error", () => mostrarAvatarFallback(match.contactName), { once: true });
 
         // A API retorna a conversa existente ou cria uma vinculada ao match.
         const conversationResponse = await conversationService.register({ match_id: matchId });
@@ -186,6 +211,16 @@ function formatarHora(value) {
     return Number.isNaN(date.getTime()) ? "Agora" : date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
+function abrirPerfilDoContato() {
+    if (!Number.isInteger(contactUserId) || contactUserId < 1) {
+        return;
+    }
+
+    window.location.href = `./user-profile.html?userId=${encodeURIComponent(contactUserId)}`;
+}
+
+chatProfileLink?.addEventListener("click", abrirPerfilDoContato);
+chatName?.addEventListener("click", abrirPerfilDoContato);
 chatForm?.addEventListener("submit", enviarMensagem);
 
 document.querySelector("#btn-back")?.addEventListener("click", () => {

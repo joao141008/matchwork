@@ -42,11 +42,22 @@ async function carregarMatches() {
             const imageContainer = card.querySelector(".match-image-container");
 
             card.dataset.matchId = match.id;
+            card.dataset.profileUserId = match.contactUserId || "";
             card.removeAttribute("data-chat");
             card.querySelector(".online-indicator")?.remove();
 
-            card.querySelector(".match-name").textContent =
-                match.contactName || "Perfil sem nome";
+            const profileLink = card.querySelector(".match-profile-link");
+            profileLink.textContent = match.contactName || "Perfil sem nome";
+
+            if (Number.isInteger(Number(match.contactUserId)) && Number(match.contactUserId) > 0) {
+                profileLink.dataset.userId = String(match.contactUserId);
+                profileLink.disabled = false;
+                profileLink.title = `Ver perfil de ${match.contactName || "contato"}`;
+            } else {
+                profileLink.disabled = true;
+                profileLink.title = "Perfil indisponível";
+                profileLink.setAttribute("aria-disabled", "true");
+            }
 
             card.querySelector(".match-type").textContent =
                 match.contactType === "company" ? "Empresa" : "Candidato";
@@ -55,7 +66,6 @@ async function carregarMatches() {
                 formatarData(match.createdAt);
 
             if (match.contactPhoto) {
-                image.src = match.contactPhoto;
                 image.alt = `Foto de ${match.contactName}`;
 
                 image.addEventListener(
@@ -63,6 +73,11 @@ async function carregarMatches() {
                     () => mostrarIniciais(imageContainer, match.contactName),
                     { once: true }
                 );
+
+                // Atualiza a imagem mesmo quando o navegador já possui uma versão em cache.
+                const photoUrl = new URL(match.contactPhoto, window.location.href);
+                photoUrl.searchParams.set("mwv", String(Date.now()));
+                image.src = photoUrl.href;
             } else {
                 mostrarIniciais(imageContainer, match.contactName);
             }
@@ -133,14 +148,27 @@ function formatarData(value) {
 
 // Usa o ID real do match. A integração da conversa será feita no próximo passo.
 matchesGrid?.addEventListener("click", (event) => {
-    const card = event.target.closest(".match-card");
+    const profileLink = event.target.closest(".match-profile-link");
 
+    // O nome abre o perfil público; o restante do card continua abrindo a conversa.
+    if (profileLink) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const userId = Number(profileLink.dataset.userId);
+        if (!Number.isInteger(userId) || userId < 1) {
+            return;
+        }
+
+        window.location.href = `./user-profile.html?userId=${encodeURIComponent(userId)}`;
+        return;
+    }
+
+    const card = event.target.closest(".match-card");
     if (!card) return;
 
     localStorage.setItem("matchSelecionado", card.dataset.matchId);
-
-    window.location.href =
-        `./chat.html?matchId=${encodeURIComponent(card.dataset.matchId)}`;
+    window.location.href = `./chat.html?matchId=${encodeURIComponent(card.dataset.matchId)}`;
 });
 
 // BOTÕES

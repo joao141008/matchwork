@@ -549,6 +549,8 @@ CREATE TABLE reports (
 
     description TEXT,
 
+    admin_response TEXT DEFAULT NULL,
+
     status ENUM(
         'pending',
         'reviewed',

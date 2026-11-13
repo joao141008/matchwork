@@ -3,6 +3,7 @@
 namespace Source\Models;
 
 use Source\Core\Model;
+use PDO;
 use Source\Core\Connect;
 
 class Report extends Model
@@ -13,6 +14,7 @@ class Report extends Model
     private ?string $reason;
     private ?string $description;
     private ?string $status;
+    private ?string $admin_response;
 
     public function __construct(
         ?int $id = null,
@@ -20,7 +22,8 @@ class Report extends Model
         ?int $reported_user_id = null,
         ?string $reason = null,
         ?string $description = null,
-        ?string $status = "pending"
+        ?string $status = "pending",
+        ?string $admin_response = null
     ) {
         $this->id = $id;
         $this->user_id = $user_id;
@@ -28,6 +31,7 @@ class Report extends Model
         $this->reason = $reason;
         $this->description = $description;
         $this->status = $status;
+        $this->admin_response = $admin_response;
 
         $this->table = "reports";
 
@@ -36,7 +40,8 @@ class Report extends Model
             "reportedUserId",
             "reason",
             "description",
-            "status"
+            "status",
+            "adminResponse"
         ];
     }
 
@@ -98,6 +103,97 @@ class Report extends Model
     public function setStatus(?string $status): void
     {
         $this->status = $status;
+    }
+
+    public function getAdminResponse(): ?string
+    {
+        return $this->admin_response;
+    }
+
+    public function setAdminResponse(?string $admin_response): void
+    {
+        $this->admin_response = $admin_response;
+    }
+
+
+    /**
+     * Lista denúncias com identificação pública de quem denunciou
+     * e, principalmente, de quem foi denunciado.
+     */
+    public function selectAllWithUserDetails(): array
+    {
+        $query = "
+            SELECT
+                r.id,
+                r.user_id,
+                r.reported_user_id,
+                r.reason,
+                r.description,
+                r.admin_response,
+                r.status,
+                r.created_at,
+
+                reporter.email AS reporter_email,
+                reporter.type_id AS reporter_type_id,
+                COALESCE(
+                    reporter_candidate.full_name,
+                    reporter_company.company_name,
+                    reporter.email,
+                    'Usuário'
+                ) AS reporter_name,
+
+                reported.email AS reported_email,
+                reported.photo AS reported_photo,
+                reported.type_id AS reported_type_id,
+
+                CASE
+                    WHEN reported.type_id = 4 THEN 'Empresa'
+                    WHEN reported.type_id = 3 THEN 'Candidato'
+                    ELSE 'Usuário'
+                END AS reported_type,
+
+                COALESCE(
+                    reported_company.company_name,
+                    reported_candidate.full_name,
+                    reported.email,
+                    CONCAT('Usuário #', r.reported_user_id)
+                ) AS reported_name
+
+            FROM {$this->table} r
+
+            LEFT JOIN users reporter
+                ON reporter.id = r.user_id
+
+            LEFT JOIN candidates reporter_candidate
+                ON reporter_candidate.user_id = reporter.id
+
+            LEFT JOIN companies reporter_company
+                ON reporter_company.user_id = reporter.id
+
+            LEFT JOIN users reported
+                ON reported.id = r.reported_user_id
+
+            LEFT JOIN candidates reported_candidate
+                ON reported_candidate.user_id = reported.id
+
+            LEFT JOIN companies reported_company
+                ON reported_company.user_id = reported.id
+
+            ORDER BY r.created_at DESC, r.id DESC
+        ";
+
+        try {
+            $stmt = Connect::getInstance()->prepare($query);
+            $stmt->execute();
+
+            $this->errorMessage = null;
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $exception) {
+            $this->errorMessage = $exception->getMessage();
+
+            return [];
+        }
     }
 
     public function reportExists(): bool

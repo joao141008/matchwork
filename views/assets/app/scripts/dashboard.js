@@ -139,8 +139,9 @@ async function configurarAvatar() {
 
     const partes = nome.trim().split(/\s+/).filter(Boolean);
 
+    // Mantém o mesmo padrão dos matches: primeiro e segundo nome.
     const iniciais = partes.length > 1
-        ? partes[0][0] + partes[partes.length - 1][0]
+        ? partes.slice(0, 2).map((parte) => parte[0]).join("")
         : (partes[0]?.[0] || "U");
 
     avatarInitial.textContent = iniciais.toLocaleUpperCase("pt-BR");
@@ -443,9 +444,16 @@ function criarCardVagaCandidato(vacancy) {
     const title = document.createElement("h3");
     title.textContent = vacancy.title || "Vaga sem título";
 
-    const company = document.createElement("p");
+    const company = document.createElement(vacancy.companyUserId ? "a" : "p");
     company.className = "vacancy-company";
     company.textContent = vacancy.companyName || "Empresa MatchWork";
+
+    if (vacancy.companyUserId) {
+        company.href = `./user-profile.html?userId=${encodeURIComponent(vacancy.companyUserId)}`;
+        company.setAttribute("aria-label", `Ver perfil de ${vacancy.companyName || "empresa"}`);
+        company.title = "Ver perfil da empresa";
+        company.addEventListener("click", (event) => event.stopPropagation());
+    }
 
     titleGroup.append(title, company);
 

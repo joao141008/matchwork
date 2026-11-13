@@ -285,6 +285,7 @@ class Vacancy extends Model
                 SELECT
                     v.*,
                     c.company_name,
+                    c.user_id AS company_user_id,
                     c.industry AS company_industry
                 FROM {$this->table} v
                 INNER JOIN companies c

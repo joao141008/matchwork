@@ -322,13 +322,36 @@ width:100%;
 }
 
 .match-name{
-
 font-size:1.4rem;
-
 font-weight:700;
-
 color:white;
+}
 
+.match-profile-link{
+    max-width:100%;
+    padding:2px 5px;
+    border:0;
+    border-radius:7px;
+    background:transparent;
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+    transition:color .2s ease, background .2s ease;
+}
+
+.match-profile-link:hover{
+    color:#D8AF87;
+    background:rgba(216,175,135,.07);
+}
+
+.match-profile-link:focus-visible{
+    outline:2px solid #D8AF87;
+    outline-offset:3px;
+}
+
+.match-profile-link:disabled{
+    cursor:default;
+    opacity:.65;
 }
 
 .match-type{

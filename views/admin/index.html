@@ -21,6 +21,9 @@
       <span class="admin-eyebrow">MATCHWORK • ADMINISTRAÇÃO</span>
       <h1>Painel Administrativo</h1>
       <p>Gerencie a plataforma e acompanhe o relacionamento com os usuários.</p>
+      <button type="button" class="admin-logout" id="btnAdminSair" title="Sair" aria-label="Sair da conta administrativa">
+        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+      </button>
     </header>
 
     <!-- INDICADORES GERAIS (mantidos do painel original) -->
@@ -36,8 +39,8 @@
         <article class="card">
           <article>
             <h3>Total de Matches</h3>
-            <span>1.247</span>
-            <p>Conexões realizadas</p>
+            <span id="stat-total-matches">—</span>
+            <p>Conexões registradas na plataforma</p>
           </article>
           <i class="fa-regular fa-heart" aria-hidden="true"></i>
         </article>
@@ -45,8 +48,8 @@
         <article class="card">
           <article>
             <h3>Empresas</h3>
-            <span>342</span>
-            <p>Organizações cadastradas</p>
+            <span id="stat-total-companies">—</span>
+            <p>Empresas com cadastro ativo</p>
           </article>
           <i class="fa-regular fa-building" aria-hidden="true"></i>
         </article>
@@ -54,12 +57,92 @@
         <article class="card">
           <article>
             <h3>Candidatos</h3>
-            <span>1.856</span>
-            <p>Profissionais cadastrados</p>
+            <span id="stat-total-candidates">—</span>
+            <p>Candidatos com cadastro ativo</p>
           </article>
           <i class="fa-regular fa-user" aria-hidden="true"></i>
         </article>
       </article>
+    </section>
+
+    <!-- DENÚNCIAS REAIS: ALVOS E HISTÓRICO -->
+    <section class="admin-reports" id="admin-reports" aria-labelledby="reports-title">
+      <header class="reports-heading">
+        <div>
+          <span class="section-kicker">SEGURANÇA E MODERAÇÃO</span>
+          <h2 id="reports-title">Painel de denúncias</h2>
+          <p>Visualize quem está recebendo denúncias, acompanhe os motivos e atualize o andamento de cada caso.</p>
+        </div>
+
+        <button type="button" id="reports-refresh-button" class="reports-refresh">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+          Atualizar denúncias
+        </button>
+      </header>
+
+      <div class="reports-stats" aria-label="Resumo das denúncias">
+        <article class="reports-stat">
+          <span>Total de denúncias</span>
+          <strong id="reports-stat-total">—</strong>
+          <small>Registros enviados</small>
+        </article>
+        <article class="reports-stat">
+          <span>Pendentes</span>
+          <strong id="reports-stat-pending">—</strong>
+          <small>Aguardando análise</small>
+        </article>
+        <article class="reports-stat">
+          <span>Em análise</span>
+          <strong id="reports-stat-reviewed">—</strong>
+          <small>Já revisadas</small>
+        </article>
+        <article class="reports-stat">
+          <span>Alvos denunciados</span>
+          <strong id="reports-stat-targets">—</strong>
+          <small>Pessoas e empresas distintas</small>
+        </article>
+      </div>
+
+      <div class="reports-layout">
+        <section class="reports-chart-panel" aria-labelledby="reports-chart-title">
+          <div class="reports-panel-heading">
+            <div>
+              <span class="section-kicker">FREQUÊNCIA POR PERFIL</span>
+              <h3 id="reports-chart-title">Pessoas e empresas mais denunciadas</h3>
+              <p>Quantidade de denúncias recebidas por cada perfil.</p>
+            </div>
+            <span class="reports-chart-total" id="reports-chart-total">0 registros</span>
+          </div>
+
+          <div id="reports-target-chart" class="reports-target-chart" aria-live="polite" aria-busy="true">
+            <p class="reports-loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Carregando dados de denúncias...</p>
+          </div>
+          <p class="reports-chart-note">O gráfico considera somente denúncias registradas na tabela <code>reports</code>, não as mensagens de suporte classificadas como denúncia.</p>
+        </section>
+
+        <section class="reports-records-panel" aria-labelledby="reports-records-title">
+          <div class="reports-panel-heading reports-records-heading">
+            <div>
+              <span class="section-kicker">ACOMPANHAMENTO</span>
+              <h3 id="reports-records-title">Denúncias recebidas</h3>
+              <p id="reports-records-count">Carregando registros...</p>
+            </div>
+            <label class="reports-filter" for="reports-status-filter">
+              <span>Status</span>
+              <select id="reports-status-filter">
+                <option value="all">Todos</option>
+                <option value="pending">Pendentes</option>
+                <option value="reviewed">Em análise</option>
+                <option value="resolved">Resolvidas</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="reports-record-list" class="reports-record-list" aria-live="polite" aria-busy="true">
+            <p class="reports-loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Carregando denúncias...</p>
+          </div>
+        </section>
+      </div>
     </section>
 
     <!-- GERENCIAMENTO DE FAQ (mantido) -->
@@ -121,12 +204,6 @@
           <i class="fa-solid fa-check-double" aria-hidden="true"></i>
         </article>
 
-        <article class="support-stat is-reports">
-          <span class="support-stat-label">Denúncias</span>
-          <strong id="support-stat-reports">—</strong>
-          <span class="support-stat-caption">Enviadas pelo suporte</span>
-          <i class="fa-solid fa-flag" aria-hidden="true"></i>
-        </article>
       </section>
 
       <!-- CAIXA DE ENTRADA + LISTA -->
@@ -147,11 +224,6 @@
             <button type="button" class="admin-tab" data-tab="question" aria-pressed="false">
               <span><i class="fa-regular fa-circle-question" aria-hidden="true"></i> Perguntas</span>
               <span class="tab-count" id="support-count-question">0</span>
-            </button>
-
-            <button type="button" class="admin-tab" data-tab="report" aria-pressed="false">
-              <span><i class="fa-solid fa-flag" aria-hidden="true"></i> Denúncias</span>
-              <span class="tab-count" id="support-count-report">0</span>
             </button>
 
             <button type="button" class="admin-tab" data-tab="suggestion" aria-pressed="false">

@@ -28,6 +28,7 @@ $route->post('/login', 'Users:auth');
 $route->put('/update', 'Users:update');
 $route->get('/list', 'Users:list');
 $route->get('/list/{userId}', 'Users:listById');
+$route->get('/public-profile/{userId}', 'Users:publicProfile');
 $route->get('/me', 'Users:me');
 $route->post('/photo', 'Users:uploadPhoto');
 $route->delete('/delete/{userId}', 'Users:deleteUser');
@@ -35,6 +36,9 @@ $route->post('/register-admin', 'Users:registerAdmin');
 $route->post('/login-admin', 'Users:authAdmin');
 $route->put('/update-admin', 'Users:updateAdmin');
 $route->group(null);
+
+// Indicadores exclusivos do painel administrativo
+$route->get('/admin/dashboard/stats', 'AdminDashboard:stats');
 
 // FAQs (leitura pública; alterações exclusivas de administrador)
 $route->get('/faqs/list', 'Faqs\\Faqs:faqList');

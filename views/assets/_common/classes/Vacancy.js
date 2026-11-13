@@ -2,6 +2,7 @@
 export default class Vacancy {
     #id;
     #companyId;
+    #companyUserId;
     #title;
     #description;
     #requirements;
@@ -23,6 +24,7 @@ export default class Vacancy {
     constructor({
         id = null,
         companyId = null,
+        companyUserId = null,
         title = "",
         description = "",
         requirements = "",
@@ -43,6 +45,7 @@ export default class Vacancy {
     } = {}) {
         this.id = id;
         this.companyId = companyId;
+        this.companyUserId = companyUserId;
         this.title = title;
         this.description = description;
         this.requirements = requirements;
@@ -70,6 +73,11 @@ export default class Vacancy {
     get companyId() { return this.#companyId; }
     set companyId(value) {
         this.#companyId = value == null || value === "" ? null : Number(value);
+    }
+
+    get companyUserId() { return this.#companyUserId; }
+    set companyUserId(value) {
+        this.#companyUserId = value == null || value === "" ? null : Number(value);
     }
 
     get title() { return this.#title; }
@@ -161,6 +169,7 @@ export default class Vacancy {
         return new Vacancy({
             id: data.id,
             companyId: data.companyId ?? data.company_id,
+            companyUserId: data.companyUserId ?? data.company_user_id,
             title: data.title,
             description: data.description,
             requirements: data.requirements,
@@ -185,6 +194,7 @@ export default class Vacancy {
         return {
             id: this.id,
             companyId: this.companyId,
+            companyUserId: this.companyUserId,
             title: this.title,
             description: this.description,
             requirements: this.requirements,

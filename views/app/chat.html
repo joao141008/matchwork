@@ -78,28 +78,26 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <header class="chat-header">
 
-      <figure class="chat-profile-image">
-
-        <img
-        id="chat-image"
-
-        src=""
-
-        alt="Perfil">
-
-      </figure>
-
+      <button
+        class="chat-profile-image"
+        id="chat-profile-link"
+        type="button"
+        title="Ver perfil"
+        aria-label="Ver perfil do contato"
+        disabled
+      >
+        <img id="chat-image" src="" alt="Perfil">
+      </button>
 
       <article class="chat-profile-info">
+        <button
+          id="chat-contact-name"
+          class="chat-contact-name-link"
+          type="button"
+          disabled
+        ></button>
 
-        <h2 id="chat-contact-name">
-
-        </h2>
-
-        <p id="chat-contact-status">
-
-        </p>
-
+        <p id="chat-contact-status"></p>
       </article>
 
     </header>

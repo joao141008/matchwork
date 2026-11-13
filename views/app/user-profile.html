@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090d0d">
+    <title>Perfil — MatchWork</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../assets/app/styles/user-profile.css">
+</head>
+<body>
+    <header class="public-profile-header">
+        <a class="brand" href="./dashboard.html" aria-label="MatchWork, voltar ao painel">
+            <span class="brand-mark"><i class="fa-solid fa-briefcase"></i></span>
+            <span>MatchWork</span>
+        </a>
+
+        <nav class="header-actions" aria-label="Navegação">
+            <button class="header-button" id="profileBackButton" type="button">
+                <i class="fa-solid fa-arrow-left"></i><span>Voltar</span>
+            </button>
+            <a class="header-button" href="./matches.html">
+                <i class="fa-solid fa-comments"></i><span>Matches</span>
+            </a>
+        </nav>
+    </header>
+
+    <main class="public-profile-main">
+        <p id="publicProfileFeedback" class="page-feedback" role="status" aria-live="polite" hidden></p>
+
+        <section id="publicProfileLoading" class="loading-card">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span>Carregando perfil...</span>
+        </section>
+
+        <article id="publicProfileCard" class="public-profile-card" hidden>
+            <header class="profile-hero">
+                <div class="profile-identity">
+                    <div class="profile-photo-wrap">
+                        <img id="publicProfilePhoto" class="profile-photo" alt="Foto do perfil" hidden>
+                        <span id="publicProfileInitials" class="profile-initials">MW</span>
+                    </div>
+
+                    <div class="identity-copy">
+                        <span id="publicProfileType" class="profile-eyebrow">PERFIL MATCHWORK</span>
+                        <h1 id="publicProfileName">Perfil</h1>
+                        <p id="publicProfileLocation" class="profile-location"></p>
+                    </div>
+                </div>
+
+                <button id="reportProfileButton" class="report-profile-button" type="button" hidden>
+                    <i class="fa-solid fa-flag"></i>
+                    Denunciar perfil
+                </button>
+            </header>
+
+            <div id="publicProfileSections" class="profile-sections"></div>
+        </article>
+
+        <section id="publicProfileNotFound" class="not-found-card" hidden>
+            <span class="not-found-icon"><i class="fa-solid fa-user-slash"></i></span>
+            <h1>Perfil indisponível</h1>
+            <p>Não foi possível encontrar este perfil. Ele pode ter sido removido ou desativado.</p>
+            <a class="primary-link" href="./dashboard.html">Voltar ao MatchWork</a>
+        </section>
+    </main>
+
+    <dialog id="reportProfileDialog" class="report-dialog" aria-labelledby="reportDialogTitle">
+        <form id="reportProfileForm" class="report-form">
+            <header class="dialog-heading">
+                <div>
+                    <span class="profile-eyebrow">SEGURANÇA MATCHWORK</span>
+                    <h2 id="reportDialogTitle">Denunciar perfil</h2>
+                    <p>Conte à nossa equipe o que aconteceu. A denúncia será vinculada a este perfil.</p>
+                </div>
+                <button id="closeReportDialog" class="dialog-close" type="button" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+
+            <div class="reported-person" id="reportedPersonLabel">
+                <i class="fa-solid fa-user"></i>
+                <span>Perfil denunciado</span>
+            </div>
+
+            <label for="reportReason">Motivo da denúncia</label>
+            <select id="reportReason" name="reason" required>
+                <option value="">Selecione um motivo</option>
+                <option value="Assédio ou discriminação">Assédio ou discriminação</option>
+                <option value="Perfil falso ou informações enganosas">Perfil falso ou informações enganosas</option>
+                <option value="Golpe ou tentativa de fraude">Golpe ou tentativa de fraude</option>
+                <option value="Spam ou conteúdo suspeito">Spam ou conteúdo suspeito</option>
+                <option value="Comportamento inadequado">Comportamento inadequado</option>
+                <option value="Outro">Outro</option>
+            </select>
+
+            <label for="reportDescription">Descrição <span>(opcional)</span></label>
+            <textarea id="reportDescription" name="description" rows="5" maxlength="3000"
+                placeholder="Explique o que aconteceu e inclua detalhes que ajudem nossa equipe a analisar."></textarea>
+
+            <p id="reportFormFeedback" class="form-feedback" role="alert" aria-live="polite" hidden></p>
+
+            <footer class="dialog-actions">
+                <button id="cancelReportButton" class="secondary-button" type="button">Cancelar</button>
+                <button id="submitReportButton" class="submit-report-button" type="submit">
+                    <i class="fa-solid fa-flag"></i> Enviar denúncia
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    <script type="module" src="../assets/app/scripts/user-profile.js"></script>
+    <script src="../assets/_common/scripts/page-refresh.js" defer></script>
+</body>
+</html>

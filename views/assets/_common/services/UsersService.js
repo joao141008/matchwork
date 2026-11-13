@@ -61,4 +61,15 @@ export default class Users extends HttpClientBase {
     async listById(userId) {
         return this.get(`/users/list/${userId}`);
     }
+
+    // Consulta apenas os dados públicos de um candidato ou empresa.
+    async publicProfile(userId) {
+        const id = Number(userId);
+
+        if (!Number.isInteger(id) || id < 1) {
+            throw new TypeError("ID do perfil inválido.");
+        }
+
+        return this.get(`/users/public-profile/${id}`);
+    }
 }

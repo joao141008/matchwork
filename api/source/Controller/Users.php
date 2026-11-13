@@ -52,6 +52,79 @@ class Users extends Api
     }
 
     /**
+     * Retorna somente as informações públicas de um candidato ou empresa.
+     * Dados sensíveis como CPF, CNPJ, e-mail e senha nunca são expostos aqui.
+     */
+    public function publicProfile(array $data): void
+    {
+        if (!$this->authToken([1, 3, 4])) {
+            $this->call(401, 'unauthorized', 'Usuário não autenticado.', 'error')->back();
+            return;
+        }
+
+        $targetUserId = filter_var($data['userId'] ?? null, FILTER_VALIDATE_INT);
+        if ($targetUserId === false || $targetUserId < 1) {
+            $this->call(400, 'bad_request', 'ID do perfil inválido.', 'error')->back();
+            return;
+        }
+
+        $user = new User();
+        if (
+            !$user->selectById((int)$targetUserId) ||
+            (int)$user->getActive() !== 1 ||
+            !in_array((int)$user->getTypeId(), [3, 4], true)
+        ) {
+            $this->call(404, 'not_found', 'Perfil não encontrado ou indisponível.', 'error')->back();
+            return;
+        }
+
+        $profileData = [
+            'user_id' => (int)$user->getId(),
+            'type_id' => (int)$user->getTypeId(),
+            'photo_url' => $this->formatPhotoUrl($user->getPhoto()),
+            'profile' => []
+        ];
+
+        if ((int)$user->getTypeId() === 3) {
+            $candidate = new Candidate();
+            if (!$candidate->selectByUserId((int)$targetUserId)) {
+                $this->call(404, 'not_found', 'Perfil do candidato não encontrado.', 'error')->back();
+                return;
+            }
+
+            $profileData['profile'] = [
+                'full_name' => $candidate->getFullName(),
+                'location' => $candidate->getLocation(),
+                'interest_area' => $candidate->getInterestArea(),
+                'salary_expectation' => $candidate->getSalaryExpectation(),
+                'shift' => $candidate->getShift(),
+                'work_model' => $candidate->getWorkModel(),
+                'employment_type' => $candidate->getEmploymentType(),
+                'about' => $candidate->getAbout(),
+                'areas' => (new CandidateArea())->selectByCandidateId((int)$candidate->getId())
+            ];
+        } else {
+            $company = new Company();
+            if (!$company->selectByUserId((int)$targetUserId)) {
+                $this->call(404, 'not_found', 'Perfil da empresa não encontrado.', 'error')->back();
+                return;
+            }
+
+            $profileData['profile'] = [
+                'company_name' => $company->getCompanyName(),
+                'location' => $company->getLocation(),
+                'website' => $company->getWebsite(),
+                'company_size' => $company->getCompanySize(),
+                'industry' => $company->getIndustry(),
+                'description' => $company->getDescription(),
+                'areas' => (new CompanyArea())->selectByCompanyId((int)$company->getId())
+            ];
+        }
+
+        $this->call(200, 'success', 'Perfil carregado com sucesso.', 'success')->back($profileData);
+    }
+
+    /**
      * Retorna os dados básicos do usuário autenticado, incluindo a URL pública da foto.
      */
     public function me(array $data = []): void
